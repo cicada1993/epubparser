@@ -1,0 +1,126 @@
+﻿<?xml version="1.0" encoding="UTF-8"?> 
+<ncx xmlns="http://www.daisy.org/z3986/2005/ncx/" version="2005-1" xml:lang="en-US">
+<head>
+ <meta name="dtb:uid" content="978-7-5313-4876-4"/>
+<meta name="dtb:depth" content="1"/>
+<meta name="dtb:totalPageCount" content="0"/>
+<meta name="dtb:maxPageNumber" content="0"/>
+</head>
+  <docTitle> 
+ <text>骆驼祥子</text> 
+ </docTitle>
+  <docAuthor> 
+ <text>老舍著</text> 
+ </docAuthor>
+  <navMap> 
+ <navPoint id="navPoint-1" playOrder="1">
+  <navLabel><text>封面</text></navLabel> 
+ <content src="Text/coverpage.xhtml"/>
+  </navPoint> 
+ <navPoint id="navPoint-2" playOrder="2"> 
+ <navLabel><text>版权信息</text></navLabel> 
+ <content src="Text/Copyright.xhtml"/> 
+ </navPoint> 
+  <navPoint id="navPoint-3" playOrder="3">
+<navLabel><text>序</text></navLabel>
+<content src="Text/Preface1.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-4" playOrder="4">
+<navLabel><text>一</text></navLabel>
+<content src="Text/Chapter1.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-5" playOrder="5">
+<navLabel><text>二</text></navLabel>
+<content src="Text/Chapter2.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-6" playOrder="6">
+<navLabel><text>三</text></navLabel>
+<content src="Text/Chapter3.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-7" playOrder="7">
+<navLabel><text>四</text></navLabel>
+<content src="Text/Chapter4.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-8" playOrder="8">
+<navLabel><text>五</text></navLabel>
+<content src="Text/Chapter5.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-9" playOrder="9">
+<navLabel><text>六</text></navLabel>
+<content src="Text/Chapter6.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-10" playOrder="10">
+<navLabel><text>七</text></navLabel>
+<content src="Text/Chapter7.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-11" playOrder="11">
+<navLabel><text>八</text></navLabel>
+<content src="Text/Chapter8.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-12" playOrder="12">
+<navLabel><text>九</text></navLabel>
+<content src="Text/Chapter9.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-13" playOrder="13">
+<navLabel><text>十</text></navLabel>
+<content src="Text/Chapter10.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-14" playOrder="14">
+<navLabel><text>十一</text></navLabel>
+<content src="Text/Chapter11.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-15" playOrder="15">
+<navLabel><text>十二</text></navLabel>
+<content src="Text/Chapter12.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-16" playOrder="16">
+<navLabel><text>十三</text></navLabel>
+<content src="Text/Chapter13.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-17" playOrder="17">
+<navLabel><text>十四</text></navLabel>
+<content src="Text/Chapter14.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-18" playOrder="18">
+<navLabel><text>十五</text></navLabel>
+<content src="Text/Chapter15.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-19" playOrder="19">
+<navLabel><text>十六</text></navLabel>
+<content src="Text/Chapter16.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-20" playOrder="20">
+<navLabel><text>十七</text></navLabel>
+<content src="Text/Chapter17.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-21" playOrder="21">
+<navLabel><text>十八</text></navLabel>
+<content src="Text/Chapter18.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-22" playOrder="22">
+<navLabel><text>十九</text></navLabel>
+<content src="Text/Chapter19.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-23" playOrder="23">
+<navLabel><text>二十</text></navLabel>
+<content src="Text/Chapter20.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-24" playOrder="24">
+<navLabel><text>二十一</text></navLabel>
+<content src="Text/Chapter21.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-25" playOrder="25">
+<navLabel><text>二十二</text></navLabel>
+<content src="Text/Chapter22.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-26" playOrder="26">
+<navLabel><text>二十三</text></navLabel>
+<content src="Text/Chapter23.xhtml"/>
+</navPoint>
+<navPoint id="navPoint-27" playOrder="27">
+<navLabel><text>二十四</text></navLabel>
+<content src="Text/Chapter24.xhtml"/>
+</navPoint>
+ 
+ </navMap> 
+ </ncx>

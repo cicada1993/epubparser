@@ -1,0 +1,139 @@
+﻿<?xml version="1.0" encoding="UTF-8"?>
+<package xmlns="http://www.idpf.org/2007/opf" version="2.0" unique-identifier="ISBN">
+<metadata xmlns:dc="http://purl.org/dc/elements/1.1/" xmlns:opf="http://www.idpf.org/2007/opf">
+<dc:title>骆驼祥子</dc:title>
+<dc:creator>老舍著</dc:creator>
+<dc:identifier id="ISBN">978-7-5313-4876-4</dc:identifier>
+<dc:language>zh-CN</dc:language>
+<dc:description></dc:description>
+<dc:coverage></dc:coverage>
+<dc:source>zw</dc:source>
+<dc:date>2015-11</dc:date>
+<dc:rights></dc:rights>
+<dc:subject></dc:subject>
+<dc:contributor></dc:contributor>
+<dc:publisher>春风文艺出版社</dc:publisher>
+<dc:type></dc:type>
+<dc:format></dc:format>
+<dc:relation></dc:relation>
+</metadata>
+<manifest>
+<item id="styles" href="Styles/Stylesheet.css" media-type="text/css"/>
+<item id="coverpage" href="Text/coverpage.xhtml" media-type="application/xhtml+xml"/>
+<item id="Copyright" href="Text/Copyright.xhtml" media-type="application/xhtml+xml"/>
+<item id="Section1" href="Text/Section1.xhtml" media-type="application/xhtml+xml"/>
+<item id="Preface1" href="Text/Preface1.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter1" href="Text/Chapter1.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter2" href="Text/Chapter2.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter3" href="Text/Chapter3.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter4" href="Text/Chapter4.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter5" href="Text/Chapter5.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter6" href="Text/Chapter6.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter7" href="Text/Chapter7.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter8" href="Text/Chapter8.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter9" href="Text/Chapter9.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter10" href="Text/Chapter10.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter11" href="Text/Chapter11.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter12" href="Text/Chapter12.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter13" href="Text/Chapter13.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter14" href="Text/Chapter14.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter15" href="Text/Chapter15.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter16" href="Text/Chapter16.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter17" href="Text/Chapter17.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter18" href="Text/Chapter18.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter19" href="Text/Chapter19.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter20" href="Text/Chapter20.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter21" href="Text/Chapter21.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter22" href="Text/Chapter22.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter23" href="Text/Chapter23.xhtml" media-type="application/xhtml+xml"/>
+<item id="Chapter24" href="Text/Chapter24.xhtml" media-type="application/xhtml+xml"/>
+<item id="ncx" href="Toc.ncx" media-type="application/x-dtbncx+xml"/>
+<item id="Frontcover-phone" href="Images/device_phone_frontcover.jpg" media-type="image/jpeg"/>
+<item id="Frontcover-pad" href="Images/device_pad_frontcover.jpg" media-type="image/jpeg"/>
+ <item id="txt001_1" href="Images/txt001_1.jpg" media-type="image/jpeg"/>
+<item id="txt001_2" href="Images/txt001_2.jpg" media-type="image/jpeg"/>
+<item id="txt001_3" href="Images/txt001_3.jpg" media-type="image/jpeg"/>
+<item id="txt001_4" href="Images/txt001_4.jpg" media-type="image/jpeg"/>
+<item id="txt002_1" href="Images/txt002_1.jpg" media-type="image/jpeg"/>
+<item id="txt002_2" href="Images/txt002_2.png" media-type="image/png"/>
+<item id="txt002_3" href="Images/txt002_3.jpg" media-type="image/jpeg"/>
+<item id="txt002_4" href="Images/txt002_4.jpg" media-type="image/jpeg"/>
+<item id="txt002_5" href="Images/txt002_5.jpg" media-type="image/jpeg"/>
+<item id="txt002_6" href="Images/txt002_6.jpg" media-type="image/jpeg"/>
+<item id="txt002_7" href="Images/txt002_7.jpg" media-type="image/jpeg"/>
+<item id="txt002_8" href="Images/txt002_8.jpg" media-type="image/jpeg"/>
+<item id="txt002_9" href="Images/txt002_9.jpg" media-type="image/jpeg"/>
+<item id="txt003_1" href="Images/txt003_1.jpg" media-type="image/jpeg"/>
+<item id="txt003_2" href="Images/txt003_2.jpg" media-type="image/jpeg"/>
+<item id="txt003_3" href="Images/txt003_3.jpg" media-type="image/jpeg"/>
+<item id="txt003_4" href="Images/txt003_4.jpg" media-type="image/jpeg"/>
+<item id="txt003_5" href="Images/txt003_5.png" media-type="image/png"/>
+<item id="txt004_1" href="Images/txt004_1.jpg" media-type="image/jpeg"/>
+<item id="txt004_2" href="Images/txt004_2.jpg" media-type="image/jpeg"/>
+<item id="txt004_3" href="Images/txt004_3.jpg" media-type="image/jpeg"/>
+<item id="txt004_4" href="Images/txt004_4.jpg" media-type="image/jpeg"/>
+<item id="txt004_5" href="Images/txt004_5.jpg" media-type="image/jpeg"/>
+<item id="txt004_6" href="Images/txt004_6.jpg" media-type="image/jpeg"/>
+<item id="txt005_1" href="Images/txt005_1.jpg" media-type="image/jpeg"/>
+<item id="txt005_2" href="Images/txt005_2.jpg" media-type="image/jpeg"/>
+<item id="txt005_3" href="Images/txt005_3.jpg" media-type="image/jpeg"/>
+<item id="txt005_4" href="Images/txt005_4.jpg" media-type="image/jpeg"/>
+<item id="txt005_5" href="Images/txt005_5.jpg" media-type="image/jpeg"/>
+<item id="txt005_6" href="Images/txt005_6.jpg" media-type="image/jpeg"/>
+<item id="txt005_7" href="Images/txt005_7.jpg" media-type="image/jpeg"/>
+<item id="txt005_8" href="Images/txt005_8.jpg" media-type="image/jpeg"/>
+<item id="txt006_1" href="Images/txt006_1.jpg" media-type="image/jpeg"/>
+<item id="txt006_2" href="Images/txt006_2.jpg" media-type="image/jpeg"/>
+<item id="txt006_3" href="Images/txt006_3.jpg" media-type="image/jpeg"/>
+<item id="txt006_4" href="Images/txt006_4.jpg" media-type="image/jpeg"/>
+<item id="txt006_5" href="Images/txt006_5.jpg" media-type="image/jpeg"/>
+<item id="txt006_6" href="Images/txt006_6.jpg" media-type="image/jpeg"/>
+<item id="txt006_7" href="Images/txt006_7.jpg" media-type="image/jpeg"/>
+<item id="txt006_8" href="Images/txt006_8.jpg" media-type="image/jpeg"/>
+<item id="txt006_9" href="Images/txt006_9.jpg" media-type="image/jpeg"/>
+<item id="txt006_10" href="Images/txt006_10.jpg" media-type="image/jpeg"/>
+<item id="txt006_11" href="Images/txt006_11.jpg" media-type="image/jpeg"/>
+<item id="txt006_12" href="Images/txt006_12.jpg" media-type="image/jpeg"/>
+<item id="txt009_1" href="Images/txt009_1.png" media-type="image/png"/>
+<item id="txt009_2" href="Images/txt009_2.png" media-type="image/png"/>
+<item id="txt009_3" href="Images/txt009_3.png" media-type="image/png"/>
+<item id="txt013_1" href="Images/txt013_1.png" media-type="image/png"/>
+<item id="txt015_1" href="Images/txt015_1.png" media-type="image/png"/>
+<item id="txt016_1" href="Images/txt016_1.png" media-type="image/png"/>
+<item id="txt021_1" href="Images/txt021_1.png" media-type="image/png"/>
+<item id="txt022_1" href="Images/txt022_1.png" media-type="image/png"/> 
+</manifest>
+<spine toc="ncx">
+<itemref idref="coverpage" linear="yes"/>
+<itemref idref="Copyright" linear="yes"/>
+ <itemref idref="Section1" linear="yes"/>
+<itemref idref="Preface1" linear="yes"/>
+<itemref idref="Chapter1" linear="yes"/>
+<itemref idref="Chapter2" linear="yes"/>
+<itemref idref="Chapter3" linear="yes"/>
+<itemref idref="Chapter4" linear="yes"/>
+<itemref idref="Chapter5" linear="yes"/>
+<itemref idref="Chapter6" linear="yes"/>
+<itemref idref="Chapter7" linear="yes"/>
+<itemref idref="Chapter8" linear="yes"/>
+<itemref idref="Chapter9" linear="yes"/>
+<itemref idref="Chapter10" linear="yes"/>
+<itemref idref="Chapter11" linear="yes"/>
+<itemref idref="Chapter12" linear="yes"/>
+<itemref idref="Chapter13" linear="yes"/>
+<itemref idref="Chapter14" linear="yes"/>
+<itemref idref="Chapter15" linear="yes"/>
+<itemref idref="Chapter16" linear="yes"/>
+<itemref idref="Chapter17" linear="yes"/>
+<itemref idref="Chapter18" linear="yes"/>
+<itemref idref="Chapter19" linear="yes"/>
+<itemref idref="Chapter20" linear="yes"/>
+<itemref idref="Chapter21" linear="yes"/>
+<itemref idref="Chapter22" linear="yes"/>
+<itemref idref="Chapter23" linear="yes"/>
+<itemref idref="Chapter24" linear="yes"/>
+</spine>
+<guide>
+<reference type="text" title="封面" href="Text/coverpage.xhtml"/>
+</guide>
+</package>

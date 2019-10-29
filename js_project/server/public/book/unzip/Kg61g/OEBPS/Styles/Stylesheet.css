@@ -1,0 +1,740 @@
+﻿
+/* 2.0.0版本*/
+
+/*封面*/
+.frontCover {
+	qrfullpage:1;
+}
+
+
+/* 页面背景色*/
+body.bodybg-color {
+	background-color:#000;
+}
+/* 垂直居中*/
+div.vertical-middle {
+	padding-top: 35%;
+
+}
+
+
+/*章标居左*/
+.sub-Title-l {
+	text-align:left;
+	font-family: "汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	margin:auto auto -0.5em auto;
+	font-size:1.1em;
+	text-indent:0em;
+	color:#888888;
+}
+/*章标居右*/
+.sub-Title-r {
+	text-align:left;
+	font-family: "汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	margin:auto auto -0.5em auto;
+	font-size:1.1em;
+	text-indent:0em;
+	color:#888888;
+}
+
+/*<h1>篇章页居左一级标题*/
+h1.firstTitle-l {
+	font-size:1.6em;
+	line-height:1.2em;
+	text-indent:0em;
+	text-align:left;
+	color:#000;
+	margin:0.3em auto 1.8em auto;
+} 
+/*篇章页副标题居左*/
+.subHead-l {
+	text-align:left;
+	line-height:1.2em;
+	font-size:1.1em;
+	text-align:left;
+	color:#6b6441;
+	margin:-2.3em auto 2.5em auto;
+
+
+}
+
+/*<h1>篇章页居右一级标题*/
+h1.firstTitle-r {
+	font-size:1.6em;
+	line-height:1.2em;
+	text-indent:0em;
+	text-align:left;
+	color:#000;
+	margin:0.3em auto 1.8em auto;
+}
+/*篇章页副标题居右*/
+.subHead-r {
+	font-size:1.1em;
+	line-height:1.2em;
+	text-align:left;
+	color:#6b6441;
+	margin:-2.3em auto 2.5em auto;
+
+
+}
+
+/*章文内容*/
+.quotation-1 {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:1em;
+	line-height:1.1em;
+	margin:1em auto;
+	text-indent:2em;
+	color:#5A5A5A;
+}
+
+
+
+/*<h1>一级标题*/
+h1.firstTitle {
+	font-size:1.5em;
+	line-height:1.2em;
+	text-indent:0em;
+	text-align:left;
+	margin:25% auto 2em auto;
+	color:#000;
+}
+
+/*<h1>带副标一级标题*/
+h1.firstTitle-3 {
+	font-size:1.5em;
+	line-height:1.2em;
+	text-indent:0em;
+	text-align:left;
+	margin:25% auto 0em auto;
+	color:#000;
+}
+
+/*<h1>带章标一级标题*/
+h1.firstTitle-2 {
+	font-size:1.5em;
+	line-height:1.2em;
+	text-indent:0em;
+	text-align:left;
+	margin:0em auto 2em auto;
+	color:#000;
+}
+
+/*<h1>带章标及副标一级标题*/
+h1.firstTitle-1 {
+	font-size:1.5em;
+	line-height:1.2em;
+	text-indent:0em;
+	text-align:left;
+	margin:0em auto 0em auto;
+	color:#000;
+}
+
+
+
+
+/*<h2>二级标题*/
+h2.secondTitle {
+	font-size:1.35em;
+	line-height:1.3em;
+	text-indent:0em;
+	color:#000;
+	margin:25% auto 2em auto;
+
+}
+
+/*<h2>带章标二级标题*/
+h2.secondTitle-2 {
+	font-size:1.35em;
+	line-height:1.3em;
+	text-indent:0em;
+	color:#000;
+	margin:0em auto 2em auto;
+
+}
+
+/*<h2>带副标二级标题*/
+h2.secondTitle-3 {
+	font-size:1.35em;
+	line-height:1.3em;
+	text-indent:0em;
+	color:#000;
+	margin:25% auto 0em auto;
+
+}
+
+/*<h2>带章标及副标二级标题*/
+h2.secondTitle-1 {
+	font-size:1.35em;
+	line-height:1.3em;
+	text-indent:0em;
+	color:#000;
+	margin:0em auto 0em auto;
+
+}
+
+/*<h3>三级标题*/
+h3.thirdTitle {
+	font-size:1.2em;
+	line-height:1.3em;
+	text-indent:0em;
+	margin-top:1em;
+	color:#000;
+}
+
+/*<h4>四级标题*/
+h4.fourthTitle {
+	font-size:1.1em;
+	line-height:1.3em;
+	text-indent:0em;
+	margin-top:1em;
+	color:#000;
+}
+
+/*<h5>五级标题*/
+h5.fifthTitle {
+	font-size:1em;
+	line-height:1.3em;
+	text-indent:0em;
+	margin-top:1em;
+	color:#000;
+}
+
+/*<h6>六级标题*/
+h6.sixthTitle {
+	font-size:1em;
+	line-height:1.3em;
+	text-indent:0em;
+	margin-top:1em;
+	color:#000;
+}
+/*标题作者居中*/
+.author {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:center;
+	text-indent:0em;
+	font-weight:bold;
+	color:#5A5A5A;
+	margin:-2em auto 3em auto;
+
+}
+/*标题作者居左*/
+.author-l {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:left;
+	text-indent:0em;
+	font-weight:bold;
+	color:#5A5A5A;
+	margin:-2em auto 3em auto;
+}
+
+/*副标题*/
+.subHead {
+	text-align:left;
+	line-height:1.2em;
+	text-indent:0em;
+	font-size:1.1em;
+	margin:0em auto 2.5em auto;
+}
+
+/*一级标题章标*/
+.subHead-1 {
+	text-align:left;
+	line-height:1.2em;
+	font-size:1.1em;
+	text-indent:0em;
+	margin:20% auto 0.3em auto;
+	color:#888888;
+}
+/*一级标题章标*/
+.subHead-2 {
+	text-align:left;
+	line-height:1.2em;
+	font-size:1.1em;
+	text-indent:0em;
+	margin:20% auto 0.3em auto;
+	color:#888888;
+}
+
+/*二级标题章标*/
+.secondsubHead-1 {
+	text-align:left;
+	line-height:1.1em;
+	font-size:1em;
+	text-indent:0em;
+	margin:20% auto 0.3em auto;
+	color:#888888;
+}
+
+/*二级标题章标*/
+.secondsubHead-2 {
+	text-align:left;
+	line-height:1.1em;
+	font-size:1em;
+	text-indent:0em;
+	margin:20% auto 0.3em auto;
+	color:#888888;
+}
+/*版权标题*/
+.copyright-title {
+	font-size:1.5em;
+	line-height:1.2em;
+	text-align:center;
+	text-indent:0em;
+	margin:0.5em auto 2em auto;
+	color:#c1a173;
+}
+
+/*版权内容*/
+.contentCR {
+	font-size:0.9em;
+	text-indent:0em;
+}
+/*文前*/
+.preface {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	margin:0.3em auto;
+	text-indent:2em;
+	color:#5A5A5A;
+}
+
+/*文前-top*/
+.preface-top {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-indent:2em;
+	color:#5A5A5A;
+	margin-top:25%;
+
+}
+/*正文内容*/
+.content {
+	font-size:1em;
+	text-indent:2em;
+}
+
+/*正文内容居左*/
+.left {
+	font-size:1em;
+	text-indent:0em;
+	text-align:left;
+
+}
+
+/*正文内容居中*/
+.center{
+	font-size:1em;
+	text-indent:0em;
+	text-align:center;
+
+}
+
+/*正文内容居右*/
+.right {
+	font-size:1em;
+	text-indent:0em;
+	text-align:right;
+
+}
+
+/*正文内容-TOP*/
+.content-top {
+	font-size:1em;
+	text-indent:2em;
+	margin-top:25%;
+
+}
+
+
+
+/*案例标题居中（引文、诗歌等）*/
+.titleQuot-c {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:1.05em;
+	line-height:1.3em;
+	margin:1em auto;
+	text-align:center;
+	color:#000;
+	font-weight:bold;
+}
+
+
+/*案例标题居左（引文、诗歌等）*/
+.titleQuot-l {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:1.05em;
+	line-height:1.3em;
+	margin:1em auto;
+	text-align:left;
+	text-indent:0em;
+	color:#000;
+	font-weight:bold;
+}
+
+
+/*案例标题*/
+.titleQuot-1 {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:1.05em;
+	line-height:1.3em;
+	margin:1em auto;
+	color:#000;
+	text-indent:2em;
+	font-weight:bold;
+}
+
+/*引文内容居左(引文、诗歌、诗词、书信、书信称谓、居右署名)*/
+.quotation {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:left;
+	text-indent:2em;
+	margin:0.3em auto;
+	color:#5A5A5A;
+}
+
+/*引文内容-top*/
+.quotation-top {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:left;
+	text-indent:2em;
+	color:#5A5A5A;
+	margin-top:25%;
+}
+
+/*引文内容span*/
+.quotation-s {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	color:#5A5A5A;
+}
+
+
+/*诗词标题*/
+.poemtitle {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:1em;
+	line-height:1.3em;
+	text-align:center;
+	text-indent:0em;
+	font-weight:bold;
+	color:#5A5A5A;
+	margin:1em auto;
+
+}
+
+
+/*诗词标题*/
+.poemtitle-l {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:1em;
+	line-height:1.3em;
+	text-align:left;
+	text-indent:2em;
+	font-weight:bold;
+	color:#5A5A5A;
+	margin:1em auto;
+
+}
+
+/*诗词作者*/
+.poemtitle-author-c {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	margin-bottom:1em;
+	text-align:center;
+	text-indent:0em;
+	color:#5A5A5A;
+}
+
+/*诗词作者居左（引文、诗歌等）*/
+.poemtitle-author-l {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	margin-bottom:1em;
+	text-indent:2em;
+	color:#5A5A5A;
+}
+
+/*诗词的内容*/
+.poem {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:center;
+	text-indent:0em;
+	margin:0.3em auto;
+	color:#5A5A5A;
+}
+
+/*诗词的内容*/
+.poem-l {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:left;
+	text-indent:2em;
+	margin:0.3em auto;
+	color:#5A5A5A;
+}
+
+
+/*右下角说明*/
+.right-info {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:right;
+	margin-bottom:0.5em;
+	color:#5A5A5A;
+}
+
+/*书信称谓*/
+.letters {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:left;
+	text-indent:0em;
+	margin:0.3em auto;
+	color:#5A5A5A;
+}
+
+/*书信内容*/
+.text-letters {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	text-align:left;
+	text-indent:2em;
+	margin:0.3em auto;
+	color:#5A5A5A;
+}
+
+
+
+/*粗体*/
+span.bold {
+	font-weight:bold;
+}
+
+/*斜体*/
+.italic {
+	font-style:italic;
+}
+
+/*红色*/
+.color-red {
+	color:#FFBD3B230;
+}
+
+/*橙色*/
+.color-orange {
+	color:#FF7F00;
+}
+
+/*黄色*/
+.color-yellow {
+	color:#EDED04;
+}
+
+
+/*绿色*/
+.color-green {
+	color:#00FF00;
+}
+
+/*青色*/
+.color-cyan {
+	color:#00FFFF;
+}
+
+/*蓝色*/
+.color-blue {
+	color:#BD3B230FF;
+}
+
+/*紫色*/
+.color-purple {
+	color:#744687;
+}
+
+/*下划线*/
+span.underline {
+	text-decoration:underline;
+}
+
+
+/*着重强调*/
+span.emphasis {
+	text-decoration:underline;
+}
+
+/*删除线*/
+span.linethrough {
+	text-decoration:line-through;
+}
+
+/*数字上标*/
+span.super {
+	font-size:0.7em;
+	vertical-align:super;
+}
+
+/*数字下标*/
+span.sub {
+	font-size:0.7em;
+	vertical-align:sub;
+}
+
+/*首字下沉，需配合.ftext 一并使用*/
+span.fDropContent {
+	font-family:"汉仪旗黑50S","HYQiHei-50s";
+	font-size:1em;
+	text-indent:0em;
+}
+
+/*被设为大写字的 Class 首字大写，需被包裹在.fDropContent 内*/
+.ftext {
+	float:left;
+	font-size:1.6em;
+	color:#5A5A5A;
+}
+
+
+/*边框*/
+.border {
+	border:1px solid #000;
+	border-radius:0.25em;
+	padding:0.25em;
+	margin:1em auto;
+}
+
+
+/*边框底色*/
+.border bgColor {
+	border:1px solid #000;
+	background:#D2D2D2;
+	border-radius:0.25em;
+	padding:0.25em;
+	margin:1em auto;
+}
+
+
+/*底色*/
+.bgColor {
+	background:#D2D2D2;
+	padding:0.25em;
+ 	border-radius:0.25em;
+	margin:1em auto;	
+}
+
+
+/*插图、表格截图（不含图片标题或图片说明）*/
+.bodyPic {
+	text-align:center;
+	margin:1em auto;
+} 
+
+/*插图、表格截图（含图片标题或图片说明）*/
+.qrbodyPic {
+	font-size:0.95em;
+	text-align:center;
+	margin:1em auto;
+} 
+
+/*表格表头*/
+.imgtitle {
+	font-family:"汉仪旗黑55S","HYQiHei-55s";
+	font-size:0.95em;
+	line-height:1.3em;
+	margin:0.3em auto;
+	text-align:center;
+	text-indent:0;
+	color:#5A5A5A;
+}
+/*图片说明*/
+.imgdescript {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	margin:0.3em auto;
+	text-align:center;
+	text-indent:0em;
+	color:#5A5A5A;
+} 
+/*图片说明居左*/
+.imgdescript-l {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	margin:0.3em auto;
+	text-align:left;
+	text-indent:2em;
+	color:#5A5A5A;
+} 
+
+/*环绕图片*/
+.floatPic-1 {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	float:right;
+	text-align:center;
+	width:45%;
+	margin-left:1em;
+	margin-bottom:0.5em;
+	margin-top:0.5em;
+}
+
+/*环绕图片*/
+.floatPic {
+	font-family:"汉仪楷体","ETrump KaiTi","方正仿宋","FZFSJW--GB1-0";
+	font-size:0.95em;
+	float:left;
+	text-align:center;
+	width:45%;
+	margin-right:1em;
+	margin-bottom:0.5em;
+	margin-top:0.5em;
+}
+
+/*公式图*/
+.g-pic {
+	height:2.5em;
+	vertical-align:middle;
+}
+
+/*行内图*/
+.h-pic {
+	height:1.5em;
+	vertical-align:middle;
+}
+
+/*生僻字截图*/
+.s-pic {
+	width:1em;
+	vertical-align:middle;
+}
+
+/*签名图片*/
+.signImg {
+	text-align:right;
+	width:30%;
+	margin:1em 0em 1em 70%;	
+}
+
+/*全屏图*/
+.qqreader-fullimg{
+	qrfullpage:1;
+}
+
+
+/*注标图*/
+.qqreader-footnote{
+	width:1em;
+	margin-left:0.1em;
+	margin-right:0.1em;
+}
+
+/*分页*/
+.pagebreak{
+	page-break-after:always;
+}
+/*结束*/
