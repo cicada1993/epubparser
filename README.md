@@ -1,0 +1,2 @@
+# epubparser
+本工程提供了一种安卓中epub电子书的解析方案，利用WebView加载epub.js读取书籍内容，通过AndServer向客户端回传结果
