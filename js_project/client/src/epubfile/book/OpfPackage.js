@@ -4,7 +4,6 @@
  * [bookPath] 图书相对路径
  * [bookUnzipPath] 图书解压资源相对路径
  * [container] META-INF/container.xml文件信息
- * [resources] 除opf文件外的所有资源列表
  * [metadata] opf文件中metadata标签内容
  * [coverPath] 封面路径
  * [navPath]
@@ -13,15 +12,22 @@
  * [uniqueIdentifier]资源唯一编号
  */
 export default class OpfPackage {
-    bookKey
-    bookPath
-    bookUnzipPath
+    bookPlot
     container
-    resources
     metadata
     coverPath
     navPath
     ncxPath
     spine
     uniqueIdentifier
+    constructor(props) {
+        this.bookPlot = props && props.bookPlot
+        this.container = props && props.container
+        this.metadata = props && props.metadata
+        this.coverPath = props && props.coverPath
+        this.navPath = props && props.navPath
+        this.ncxPath = props && props.ncxPath
+        this.spine = props && props.spine
+        this.uniqueIdentifier = props && props.uniqueIdentifier
+    }
 }

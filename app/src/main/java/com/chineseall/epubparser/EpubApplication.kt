@@ -4,6 +4,7 @@ import android.app.ActivityManager
 import android.app.Application
 import android.content.Context
 import android.text.TextUtils
+import com.chineseall.epubparser.lib.Kiter
 import com.chineseall.epubparser.lib.downloader.DldManager
 import com.chineseall.epubparser.lib.util.LogUtil
 
@@ -11,8 +12,9 @@ import com.chineseall.epubparser.lib.util.LogUtil
 class EpubApplication : Application() {
     override fun attachBaseContext(base: Context?) {
         super.attachBaseContext(base)
-        if(isMainProcess()){
+        if (isMainProcess()) {
             DldManager.init(this)
+            Kiter.get().initServer(this)
         }
     }
 

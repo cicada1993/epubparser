@@ -3,54 +3,72 @@ package com.chineseall.epubparser
 import android.content.Intent
 import android.os.Bundle
 import android.text.TextUtils
+import android.view.Menu
+import android.view.MenuItem
 import android.view.View
 import android.widget.Button
 import android.widget.EditText
 import android.widget.TextView
 import androidx.appcompat.app.AppCompatActivity
+import com.alibaba.fastjson.JSON
 import com.chineseall.epubparser.lib.Kiter
 import com.chineseall.epubparser.lib.book.OpfPackage
-import com.chineseall.epubparser.lib.core.ChapterReceiver
-import com.chineseall.epubparser.lib.core.OpenReceiver
-import com.chineseall.epubparser.lib.downloader.DldListener
-import com.chineseall.epubparser.lib.downloader.DldManager
-import com.chineseall.epubparser.lib.downloader.DldModel
-import com.chineseall.epubparser.lib.downloader.DldTask
-import com.chineseall.epubparser.lib.render.RenderItem
-import com.chineseall.epubparser.lib.util.FileUtil
-import com.chineseall.epubparser.lib.util.LogUtil
-import io.reactivex.Observable
-import io.reactivex.ObservableOnSubscribe
-import io.reactivex.android.schedulers.AndroidSchedulers
-import io.reactivex.disposables.Disposable
-import io.reactivex.schedulers.Schedulers
+import com.chineseall.epubparser.lib.core.BOOK_OPEN
+import com.chineseall.epubparser.lib.core.BookReceiver
+import com.chineseall.epubparser.lib.core.CHAPTER_LOAD
+import com.chineseall.epubparser.lib.core.TimeCostMonitor
+import com.chineseall.epubparser.lib.html.Chapter
+import com.chineseall.epubparser.lib.render.Page
+import com.chineseall.epubparser.lib.render.ReaderView
+import com.chineseall.epubparser.lib.render.RenderReceiver
+import com.chineseall.epubparser.lib.util.MD5Util
 import pub.devrel.easypermissions.*
-import java.lang.StringBuilder
 import java.util.*
 
 class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
-    EasyPermissions.RationaleCallbacks, View.OnClickListener {
+    EasyPermissions.RationaleCallbacks, View.OnClickListener, ScanResultBus.Consumer {
     private val REQ_PERMISSION = 0x100
     private val REQ_SETTING = 0x200
-    private lateinit var shIdET: EditText
     private lateinit var urlET: EditText
-    private lateinit var downloadBtn: Button
-    private lateinit var msgTV: TextView
-    private lateinit var unzipBtn: Button
-    private lateinit var openBtn: Button
-    private lateinit var titleTV: TextView
-    private lateinit var creatorTV: TextView
-    private lateinit var publisherTV: TextView
-    private lateinit var pubdateTV: TextView
-    private lateinit var languageTV: TextView
-    private lateinit var identifierTV: TextView
+    private lateinit var openUnzippedBtn: Button
+    private lateinit var openZippedBtn: Button
+    private lateinit var bookInfoTV: TextView
     private lateinit var chapterIndexET: EditText
-    private lateinit var chapterContentTV: TextView
-    private lateinit var chapterLoadBtn: Button
+    private lateinit var chapterReadBtn: Button
+    private lateinit var openCostTimeTV: TextView
+    private lateinit var chapterCostTimeTV: TextView
+    private lateinit var readerView: ReaderView
+    private lateinit var chapterTitleTV: TextView
+    private lateinit var readerCloseTV: TextView
+    private lateinit var readerControlLayout: View
+    private lateinit var pagePreTV: TextView
+    private lateinit var pageNextTV: TextView
+    private lateinit var pageProgressTV: TextView
+    private var book: OpfPackage? = null
+    private var monitor = TimeCostMonitor()
+    private var totalPage = 0
+    private var curPage = 0
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
         checkAndReqPermission()
+    }
+
+    override fun onCreateOptionsMenu(menu: Menu?): Boolean {
+        menuInflater.inflate(R.menu.main, menu)
+        return true
+    }
+
+    override fun onOptionsItemSelected(item: MenuItem): Boolean {
+        when (item.itemId) {
+            R.id.reset -> {
+                reset()
+            }
+            R.id.scan -> {
+                scan()
+            }
+        }
+        return true
     }
 
     fun checkAndReqPermission() {
@@ -145,204 +163,194 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
         }
     }
 
-    private var task: DldTask? = null
-    private var unzipDisp: Disposable? = null
-    private lateinit var bookRootDir: String
-    private lateinit var bookUnzipRootDir: String
-    private val bookFolder = "/book"
-    private val bookUnzipFolder = "/book/unzip"
     fun initPage() {
-        bookRootDir = FileUtil.getAppCachePath(this) + bookFolder + "/"
-        bookUnzipRootDir = FileUtil.getAppCachePath(this) + bookUnzipFolder + "/"
-        shIdET = findViewById(R.id.et_book_shId)
         urlET = findViewById(R.id.et_book_url)
-        downloadBtn = findViewById(R.id.btn_download)
-        msgTV = findViewById(R.id.tv_msg)
-        unzipBtn = findViewById(R.id.btn_unzip)
-        openBtn = findViewById(R.id.btn_open)
+        openUnzippedBtn = findViewById(R.id.btn_open_unzipped)
+        openZippedBtn = findViewById(R.id.btn_open_zipped)
+        bookInfoTV = findViewById(R.id.tv_bookinfo)
 
-        titleTV = findViewById(R.id.tv_title)
-        creatorTV = findViewById(R.id.tv_creator)
-        publisherTV = findViewById(R.id.tv_publisher)
-        pubdateTV = findViewById(R.id.tv_pubdate)
-        languageTV = findViewById(R.id.tv_language)
-        identifierTV = findViewById(R.id.tv_identifier)
         chapterIndexET = findViewById(R.id.et_chapter_index)
-        chapterContentTV = findViewById(R.id.tv_chapter_content)
-        chapterLoadBtn = findViewById(R.id.btn_load_chapter)
+        chapterReadBtn = findViewById(R.id.btn_chapter_read)
+        openCostTimeTV = findViewById(R.id.tv_open_cost_time)
+        chapterCostTimeTV = findViewById(R.id.tv_chapter_cost_time)
 
-        downloadBtn.setOnClickListener(this)
-        unzipBtn.setOnClickListener(this)
-        openBtn.setOnClickListener(this)
-        chapterLoadBtn.setOnClickListener(this)
+        readerView = findViewById(R.id.view_reader)
+        chapterTitleTV = findViewById(R.id.tv_chapter_title)
+        readerCloseTV = findViewById(R.id.tv_read_close)
+        readerControlLayout = findViewById(R.id.layout_read_control)
+        pagePreTV = findViewById(R.id.tv_pre_page)
+        pageNextTV = findViewById(R.id.tv_next_page)
+        pageProgressTV = findViewById(R.id.tv_page_progress)
+
+        openUnzippedBtn.setOnClickListener(this)
+        openZippedBtn.setOnClickListener(this)
+        chapterReadBtn.setOnClickListener(this)
+        readerCloseTV.setOnClickListener(this)
+        pagePreTV.setOnClickListener(this)
+        pageNextTV.setOnClickListener(this)
+        ScanResultBus.register(this)
+    }
+
+    override fun onScanResult(result: String?) {
+        urlET.setText(result)
     }
 
     override fun onClick(view: View?) {
         when (view?.id) {
-            R.id.btn_download -> {
-                download()
+            R.id.btn_open_unzipped -> {
+                openBook(false)
             }
-            R.id.btn_unzip -> {
-                unzip()
+            R.id.btn_open_zipped -> {
+                openBook(true)
             }
-            R.id.btn_open -> {
-                open()
-            }
-            R.id.btn_load_chapter -> {
+            R.id.btn_chapter_read -> {
                 loadChapter()
             }
+            R.id.tv_read_close -> {
+                stopRead()
+            }
+            R.id.tv_pre_page -> {
+                prePage()
+            }
+            R.id.tv_next_page -> {
+                nextPage()
+            }
         }
     }
 
-    fun download() {
-        val shId = shIdET.text.toString()
-        val url = urlET.text.toString()
-        if (TextUtils.isEmpty(shId) || TextUtils.isEmpty(url)) {
-            return
+    private val bookReceiver = object : BookReceiver() {
+        override fun bookSuccess(book: OpfPackage) {
+            fillBookInfo(book)
         }
-        val model = DldModel.Builder().url(url).key(shId).folder(bookRootDir).build()
 
-        task = DldManager.get().createTask(model)
-        task!!.listener(
-            object : DldListener {
-                override fun onPending(taskId: Int) {
+        override fun bookFailed(bookKey: String?, msg: String?) {
 
-                }
+        }
 
-                override fun onStart(taskId: Int) {
+        override fun chapterSuccess(chapter: Chapter) {
+            fillChapterContent(chapter)
+        }
 
-                }
+        override fun chapterFailed(bookKey: String?, chapterIndex: Int?, msg: String?) {
 
-                override fun onConnect(taskId: Int) {
-
-                }
-
-                override fun onProgress(taskId: Int, readBytes: Long, totalBytes: Long) {
-                    downloadBtn.isEnabled = false
-                    downloadBtn.text = "下载中"
-                }
-
-                override fun onComplete(taskId: Int, totalBytes: Long) {
-                    downloadBtn.isEnabled = false
-                    downloadBtn.text = "已下载"
-                }
-
-                override fun onPause(taskId: Int, readBytes: Long, totalBytes: Long) {
-                    downloadBtn.isEnabled = true
-                    downloadBtn.text = "已暂停"
-                }
-
-                override fun onError(taskId: Int, errMsg: String?) {
-                    msgTV.text = errMsg
-                }
-            })
-            .notify(true)
-            .fresh(false)
-            .setUp()
-
-    }
-
-    fun unzip() {
-        task?.run {
-            val model = dldModel
-            val key = model.key
-            val filePath = model.filePath
-            val destDir = "$bookUnzipRootDir$key/"
-            unzipBtn.text = "正在解压"
-            unzipDisp = Observable.create(ObservableOnSubscribe<Boolean> {
-                it.onNext(FileUtil.unzip(filePath, destDir))
-                it.onComplete()
-            }).subscribeOn(Schedulers.io()).observeOn(AndroidSchedulers.mainThread())
-                .subscribe(
-                    {
-                        if (it) {
-                            unzipBtn.text = "解压完成"
-                        } else {
-                            unzipBtn.text = "解压失败"
-                        }
-                    },
-                    {
-
-                    },
-                    {
-
-                    }
-                )
         }
     }
 
-    fun open() {
-        LogUtil.d("打开图书")
-        task?.run {
-            val model = dldModel
-            val bookKey = model.key
-            val name = model.name
-            val bookPath = "$bookFolder/$name"
-            val bookUnzipPath = "$bookUnzipFolder/$bookKey/"
-            Kiter.get().openBook(
-                this@MainActivity,
-                bookKey,
-                bookPath,
-                bookUnzipPath,
-                object : OpenReceiver {
-                    override fun onSuccess(book: OpfPackage?) {
-                        LogUtil.d("打开成功")
-                        fillBookInfo(book)
-                    }
+    private val renderReceiver = object : RenderReceiver {
+        override fun onPages(chapterIndex: Int, pages: MutableList<Page>) {
+            totalPage = pages.size
+        }
 
-                    override fun onFailed(msg: String?) {
-                        LogUtil.d("打开失败:$msg")
-                    }
-                })
+        override fun onRenderPage(page: Page, index: Int) {
+            curPage = index
+            pageProgressTV.text = "$curPage / $totalPage"
         }
     }
 
-    fun fillBookInfo(book: OpfPackage?) {
+    fun openBook(zipped: Boolean) {
+        val bookUrl = urlET.text.toString()
+        if (bookUrl.isNullOrEmpty()) {
+
+        } else {
+            book = null
+            monitor.onKey(BOOK_OPEN).onStart()
+            Kiter.get().openServerBook(
+                this,
+                MD5Util.getMD5Code(bookUrl),
+                bookUrl,
+                zipped,
+                bookReceiver
+            )
+        }
+    }
+
+    fun fillBookInfo(book: OpfPackage) {
+        this.book = book
         runOnUiThread {
-            book?.metadata?.let { meta ->
-                titleTV.text = meta.title ?: ""
-                creatorTV.text = meta.creator ?: ""
-                publisherTV.text = meta.publisher ?: ""
-                pubdateTV.text = meta.pubdate ?: ""
-                languageTV.text = meta.language ?: ""
-                identifierTV.text = meta.identifier ?: ""
+            val openGap = monitor.onKey(BOOK_OPEN).onEnd().gap()
+            openCostTimeTV.text =
+                if (openGap > 1000) "${String.format("%.2f", openGap / 1000f)}s" else "${openGap}ms"
+            val chapterCount = book.spine?.size ?: 0
+            chapterIndexET.hint = "输入章节编号（0—${chapterCount - 1}）"
+            book.metadata?.let {
+                bookInfoTV.text = JSON.toJSONString(it)
             }
         }
     }
 
     fun loadChapter() {
-        task?.run {
-            val model = dldModel
-            val bookKey = model.key
+        book?.bookPlot?.run {
+            monitor.onKey(CHAPTER_LOAD).onStart()
             val chapterIndex = chapterIndexET.text.toString().toInt()
-            Kiter.get()
-                .loadChapter(
-                    this@MainActivity,
-                    bookKey,
-                    chapterIndex,
-                    object : ChapterReceiver {
-                        override fun onSuccess(paragraphs: MutableList<RenderItem>?) {
-                            LogUtil.d("加载成功")
-                            fillChapterContent(paragraphs)
-                        }
-
-                        override fun onFailed(msg: String?) {
-                            LogUtil.d("加载失败:$msg")
-                        }
-                    })
+            Kiter.get().loadChapter(
+                this@MainActivity,
+                bookKey!!,
+                bookUrl!!,
+                zipped!!,
+                chapterIndex,
+                bookReceiver
+            )
         }
     }
 
-    fun fillChapterContent(paragraphs: MutableList<RenderItem>?) {
-        val sb = StringBuilder()
-        paragraphs?.let {
-            for (paragraph in it) {
-                paragraph.render(sb)
-            }
+    fun fillChapterContent(chapter: Chapter) {
+        runOnUiThread {
+            val chapterGap = monitor.onKey(CHAPTER_LOAD).onEnd().gap()
+            chapterCostTimeTV.text =
+                if (chapterGap > 1000) "${String.format(
+                    "%.2f",
+                    chapterGap / 1000f
+                )}s" else "${chapterGap}ms"
+            startRead(chapter)
         }
-        runOnUiThread{
-            chapterContentTV.text = sb
+    }
+
+    fun startRead(chapter: Chapter) {
+        readerView.post {
+            readerCloseTV.visibility = View.VISIBLE
+            readerControlLayout.visibility = View.VISIBLE
+            readerView.visibility = View.VISIBLE
+            chapterTitleTV.visibility = View.VISIBLE
+            val chapterIndex = chapterIndexET.text.toString().toInt()
+            chapterTitleTV.text = "第${chapterIndex + 1}章"
+            readerView.render(book, chapter, renderReceiver)
         }
+    }
+
+
+    fun nextPage() {
+        readerView.nextPage()
+    }
+
+    fun prePage() {
+        readerView.prePage()
+    }
+
+    fun stopRead() {
+        readerCloseTV.visibility = View.INVISIBLE
+        readerControlLayout.visibility = View.INVISIBLE
+        readerView.visibility = View.INVISIBLE
+        chapterTitleTV.visibility = View.INVISIBLE
+        chapterTitleTV.text = ""
+        readerView.clear()
+    }
+
+    fun reset() {
+        book = null
+        bookInfoTV.text = ""
+        readerView.clear()
+        urlET.setText("")
+        chapterIndexET.setText("")
+        chapterIndexET.hint = "输入章节编号"
+        openCostTimeTV.text = ""
+        chapterCostTimeTV.text = ""
+        chapterTitleTV.text = ""
+        totalPage = 0
+        curPage = 0
+    }
+
+    fun scan() {
+        ScanActivity.start(this)
     }
 }
 

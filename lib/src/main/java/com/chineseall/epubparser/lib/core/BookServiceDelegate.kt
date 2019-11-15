@@ -9,11 +9,13 @@ import android.webkit.JavascriptInterface
 import com.alibaba.fastjson.JSON
 import com.chineseall.epubparser.lib.Kiter
 import com.chineseall.epubparser.lib.request.ChapterRequest
-import com.chineseall.epubparser.lib.request.OpenRequest
+import com.chineseall.epubparser.lib.request.BookRequest
+import com.chineseall.epubparser.lib.request.SyncRequest
 import com.chineseall.epubparser.lib.util.LogUtil
 import com.chineseall.epubparser.lib.view.CommonWebView
 
 class BookServiceDelegate(val context: Context) {
+    private var monitor: TimeCostMonitor = TimeCostMonitor()
     private var webView: CommonWebView? = null
     private var webViewHandler: WebViewHandler? = null
     private var webViewThread: HandlerThread? = null
@@ -22,9 +24,10 @@ class BookServiceDelegate(val context: Context) {
 
     companion object {
         val MSG_CREATE_WEBVIEW = 0x100
-        val MSG_OPEN_BOOK = 0x200
-        val MSG_LOAD_CHAPTER = 0x300
-        val MSG_RELEASE_WEBVIEW = 0x400
+        val MSG_SYNC_SERVER = 0x200
+        val MSG_OPEN_BOOK = 0x300
+        val MSG_LOAD_CHAPTER = 0x400
+        val MSG_RELEASE_WEBVIEW = 0x500
     }
 
     /**
@@ -49,9 +52,18 @@ class BookServiceDelegate(val context: Context) {
     }
 
     /**
+     * 同步本地服务信息
+     */
+    fun syncServer(request: SyncRequest?) {
+        request?.run {
+            sendEventToJS(MSG_SYNC_SERVER, JSON.toJSONString(this))
+        }
+    }
+
+    /**
      * 打开书籍
      */
-    fun openBook(request: OpenRequest?) {
+    fun openBook(request: BookRequest?) {
         request?.run {
             sendEventToJS(MSG_OPEN_BOOK, JSON.toJSONString(this))
         }
@@ -127,20 +139,12 @@ class BookServiceDelegate(val context: Context) {
         @JavascriptInterface
         fun onLife(lifeType: Int) {
             LogUtil.d("onLife:$lifeType")
-            if (lifeType == 4) {
+            if (lifeType == 1) {
+                // React Component已经创建 JSBridge对象也已经创建 此时可以进行交互
+                monitor.onKey(WEBVIEW_INIT).onEnd()
                 jsReady = true
                 flushEvent()
             }
-        }
-
-        @JavascriptInterface
-        fun onBookSuccess(key: String, data: String?) {
-
-        }
-
-        @JavascriptInterface
-        fun onBookFailed(key: String, msg: String?) {
-
         }
     }
 
@@ -152,8 +156,14 @@ class BookServiceDelegate(val context: Context) {
                     webView = CommonWebView(context)
                     webView?.run {
                         addJavascriptInterface(BookJSBridge(), "platform")
+                        monitor.onKey(WEBVIEW_INIT).onStart()
                         loadUrl(Kiter.PARSE_URL)
                     }
+                }
+                MSG_SYNC_SERVER -> {
+                    LogUtil.d("sync server")
+                    val param = msg.obj as String?
+                    invokeJSFunction("syncServer", param)
                 }
                 MSG_OPEN_BOOK -> {
                     LogUtil.d("open book by js")

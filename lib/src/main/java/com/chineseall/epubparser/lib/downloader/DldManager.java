@@ -64,7 +64,7 @@ public class DldManager {
         if (!hasInit) {
             hasInit = true;
             context = application;
-            folderPath = FileUtil.getAppCachePath(context) + "/elitedownload";
+            folderPath = FileUtil.getSDCardAppFilePath(context) + "/elitedownload";
             LitePal.initialize(application);
         }
     }
@@ -151,7 +151,7 @@ public class DldManager {
     public OkHttpClient.Builder clientBuilder() {
         OkHttpClient.Builder builder = new OkHttpClient.Builder()
                 .connectTimeout(15, TimeUnit.SECONDS)
-                .readTimeout(315, TimeUnit.SECONDS)
+                .readTimeout(15, TimeUnit.SECONDS)
                 .sslSocketFactory(sslSocketFactory, trustManager)
                 .hostnameVerifier(new HostnameVerifier() {
                     @Override

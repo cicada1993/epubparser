@@ -7,8 +7,8 @@ const app = express()
 const bodyParser = require('body-parser')
 const multer = require('multer')
 const upload = multer({ dest: './upload' })
-app.use(bodyParser.json())
-app.use(bodyParser.urlencoded({ extended: true }))
+app.use(bodyParser.json({limit: '50mb'}))
+app.use(bodyParser.urlencoded({limit: '50mb', extended: true}))
 // 处理跨域
 app.use(cors())
 // However, the path that you provide to the express.static function is relative 
@@ -38,7 +38,8 @@ app.delete('/', (req, res) => {
 
 })
 
-app.post('/book/openResult',(req,res) => {
+app.post('/book/bookResult',(req,res) => {
+    console.log('收到书籍加载结果')
     res.send(
         {
             success:true
@@ -47,6 +48,15 @@ app.post('/book/openResult',(req,res) => {
 })
 
 app.post('/book/chapterResult',(req,res) => {
+    console.log('收到章节加载结果')
+    res.send(
+        {
+            success:true
+        }
+    )
+})
+
+app.post('/book/cssResult',(req,res) => {
     res.send(
         {
             success:true

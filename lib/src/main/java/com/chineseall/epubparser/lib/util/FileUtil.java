@@ -36,17 +36,21 @@ public class FileUtil {
         }
     }
 
+    public static String getSDCardRootPath() {
+        return Environment.getExternalStorageDirectory().getAbsolutePath();
+    }
+
+    public static String getMemoryAppDataPath(Context context) {
+        return context.getFilesDir().getParentFile().getParentFile().getAbsolutePath();
+    }
+
     /**
      * 获取应用缓存目录
      *
      * @return
      */
-    public static String getAppCachePath(Context context) {
-        if (isSDCardAvailable()) {
-            return context.getExternalFilesDir(null).getAbsolutePath();
-        } else {
-            return context.getFilesDir().getAbsolutePath();
-        }
+    public static String getSDCardAppFilePath(Context context) {
+        return context.getExternalFilesDir(null).getAbsolutePath();
     }
 
     /**

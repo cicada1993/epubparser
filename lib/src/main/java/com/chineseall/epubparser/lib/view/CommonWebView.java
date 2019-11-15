@@ -24,9 +24,6 @@ import android.webkit.WebViewClient;
 import com.chineseall.epubparser.lib.BuildConfig;
 import com.chineseall.epubparser.lib.util.NetWorkUtil;
 
-/**
- * 带进度条的webview
- */
 public class CommonWebView extends WebView {
     private WebViewClientListener mWebViewClientListener;
     private ChromeClientListener mChromeClientListener;
@@ -93,7 +90,7 @@ public class CommonWebView extends WebView {
             settings.setMixedContentMode(WebSettings.MIXED_CONTENT_ALWAYS_ALLOW);
         }
         setHorizontalScrollBarEnabled(false);
-        WebView.setWebContentsDebuggingEnabled(BuildConfig.DEBUG);
+        WebView.setWebContentsDebuggingEnabled(true);
         if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.LOLLIPOP) {
             // 接受三方cookie
             CookieManager.getInstance().setAcceptThirdPartyCookies(this, true);

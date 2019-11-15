@@ -60,6 +60,7 @@ public class DldTask implements Comparable<DldTask>, RunnableCallback {
     private boolean isNotify = false; // 是否显示通知栏
     private boolean isApkInstall = false; // 安装包自动安装
     private boolean isFresh = true; // 下载完成是否再次重新下载
+    private boolean noProgress = false; // 下载过程中不发送进度消息
     private List<DldRunnable> list; // 下载任务列表
     private TaskRecord record; // 下载记录
     private Context context;
@@ -83,15 +84,18 @@ public class DldTask implements Comparable<DldTask>, RunnableCallback {
         if (index > 0) {
             this.fileName = dldModel.url.substring(index);
         }
-        record = DldRecorder.get().readRecord(taskId);
-        if (record != null) {
-            this.state = record.state;
-            this.fileLength = record.fileLength;
-            this.fileName = record.fileName;
-            this.isMultiThread = record.isMultiThread;
-            this.threadNum = record.threadNum;
-            this.readSuccess = this.fileLength > 0;
-            obtainRecord().appendPlot("从下载记录中恢复", true);
+        File file = new File(dldModel.filePath);
+        if (file.exists()) {
+            record = DldRecorder.get().readRecord(taskId);
+            if (record != null) {
+                this.state = record.state;
+                this.fileLength = record.fileLength;
+                this.fileName = record.fileName;
+                this.isMultiThread = record.isMultiThread;
+                this.threadNum = record.threadNum;
+                this.readSuccess = this.fileLength > 0;
+                obtainRecord().appendPlot("从下载记录中恢复", true);
+            }
         }
     }
 
@@ -156,6 +160,17 @@ public class DldTask implements Comparable<DldTask>, RunnableCallback {
      */
     public DldTask fresh(boolean isFresh) {
         this.isFresh = isFresh;
+        return this;
+    }
+
+    /**
+     * 下载过程中不回调进度
+     *
+     * @param noProgress
+     * @return
+     */
+    public DldTask noProgress(boolean noProgress) {
+        this.noProgress = noProgress;
         return this;
     }
 
@@ -371,7 +386,11 @@ public class DldTask implements Comparable<DldTask>, RunnableCallback {
     private Pair<Boolean, String> headRequest() {
         boolean res;
         String msg;
-        Request request = new Request.Builder().head().url(dldModel.url).build();
+        Request request = new Request.Builder()
+                .head()
+                .header("security", " ChineseAll&*(")
+                .url(dldModel.url)
+                .build();
         Call call = okClient.newCall(request);
         try {
             Response response = call.execute();
@@ -419,7 +438,11 @@ public class DldTask implements Comparable<DldTask>, RunnableCallback {
     private Pair<Boolean, String> getRequest() {
         boolean res;
         String msg;
-        Request request = new Request.Builder().head().url(dldModel.url).build();
+        Request request = new Request.Builder()
+                .head()
+                .header("security", " ChineseAll&*(")
+                .url(dldModel.url)
+                .build();
         Call call = okClient.newCall(request);
         try {
             Response response = call.execute();
@@ -471,9 +494,11 @@ public class DldTask implements Comparable<DldTask>, RunnableCallback {
             for (DldRunnable runnable : list) {
                 totalSofar += runnable.sofar();
             }
-            DldProgress progress = obtainProgress();
-            progress.sofar = totalSofar;
-            DldEventBus.get().postToMain(progress);
+            if (!noProgress) {
+                DldProgress progress = obtainProgress();
+                progress.sofar = totalSofar;
+                DldEventBus.get().postToMain(progress);
+            }
             if (isNotify) {
                 DldNotifier.get()
                         .show(

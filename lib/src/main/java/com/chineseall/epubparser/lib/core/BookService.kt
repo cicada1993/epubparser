@@ -9,7 +9,8 @@ import android.content.Intent
 import android.os.Build
 import android.os.IBinder
 import com.chineseall.epubparser.lib.request.ChapterRequest
-import com.chineseall.epubparser.lib.request.OpenRequest
+import com.chineseall.epubparser.lib.request.BookRequest
+import com.chineseall.epubparser.lib.request.SyncRequest
 import com.chineseall.epubparser.lib.util.LogUtil
 
 /**
@@ -20,12 +21,21 @@ class BookService : Service() {
 
     companion object {
         const val TAG = "BookService"
+        const val SYNC_REQUEST = "syncRequest"
         const val OPEN_REQUEST = "openRequest"
         const val CHAPTER_REQUEST = "chapterRequest"
+        const val ACTION_SYNC_SERVER = "syncServer"
         const val ACTION_OPEN_BOOK = "openBook"
         const val ACTION_LOAD_CHAPTER = "loadChapter"
 
-        fun openBook(context: Context, openRequest: OpenRequest) {
+        fun syncServer(context: Context, syncRequest: SyncRequest) {
+            val intent = Intent(context, BookService::class.java)
+            intent.action = ACTION_SYNC_SERVER
+            intent.putExtra(SYNC_REQUEST, syncRequest)
+            context.startService(intent)
+        }
+
+        fun openBook(context: Context, openRequest: BookRequest) {
             val intent = Intent(context, BookService::class.java)
             intent.action = ACTION_OPEN_BOOK
             intent.putExtra(OPEN_REQUEST, openRequest)
@@ -81,8 +91,12 @@ class BookService : Service() {
     override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
 
         when (intent?.action) {
+            ACTION_SYNC_SERVER -> {
+                val syncRequest = intent.getSerializableExtra(SYNC_REQUEST) as SyncRequest?
+                delegate?.syncServer(syncRequest)
+            }
             ACTION_OPEN_BOOK -> {
-                val openRequest = intent.getSerializableExtra(OPEN_REQUEST) as OpenRequest?
+                val openRequest = intent.getSerializableExtra(OPEN_REQUEST) as BookRequest?
                 delegate?.openBook(openRequest)
             }
             ACTION_LOAD_CHAPTER -> {

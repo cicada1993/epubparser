@@ -116,6 +116,7 @@ class DldRunnable implements Runnable {
         Request request = new Request.Builder()
                 .url(url)
                 .get()
+                .header("security","ChineseAll&*(")
                 .header("Range", "bytes=" + startPosition + "-" + to)
                 .build();
         call = dldClient.newCall(request);

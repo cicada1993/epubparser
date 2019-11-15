@@ -24,7 +24,7 @@ class DldTaskPool {
         synchronized (runningTasks) {
             DldModel model = task.getDldModel();
             File file = new File(model.filePath);
-            if ((file.exists() || task.getState() == DldState.COMPLETE) && !task.isFresh()) {
+            if (task.getState() == DldState.COMPLETE && file.exists() && !task.isFresh()) {
                 // 已经下载完成 不需要重新下载
                 task.complete();
                 return;

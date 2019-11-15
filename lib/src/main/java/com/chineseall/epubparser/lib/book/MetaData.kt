@@ -20,7 +20,7 @@ package com.chineseall.epubparser.lib.book
 class MetaData {
     var creator: String? = null
     var description: String? = null
-    var direction: Any? = null
+    var direction: String? = null
     var flow: String? = null
     var identifier: String? = null
     var language: String? = null

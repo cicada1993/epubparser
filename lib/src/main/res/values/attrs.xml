@@ -1,0 +1,15 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <!-- 思源字体TextView控件-->
+    <declare-styleable name="SerifTextView">
+        <attr name="fontType" format="enum">
+            <enum name="Bold" value="1" />
+            <enum name="ExtraLight" value="2" />
+            <enum name="Heavy" value="3" />
+            <enum name="Light" value="4" />
+            <enum name="Medium" value="5" />
+            <enum name="Regular" value="6" />
+            <enum name="SemiBold" value="7" />
+        </attr>
+    </declare-styleable>
+</resources>
