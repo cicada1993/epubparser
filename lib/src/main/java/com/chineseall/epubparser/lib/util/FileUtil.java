@@ -41,7 +41,12 @@ public class FileUtil {
     }
 
     public static String getMemoryAppDataPath(Context context) {
-        return context.getFilesDir().getParentFile().getParentFile().getAbsolutePath();
+        // data/data/包名/
+        return context.getFilesDir().getParentFile().getAbsolutePath();
+    }
+
+    public static String getMemoryDataPath() {
+        return Environment.getDataDirectory().getAbsolutePath();
     }
 
     /**

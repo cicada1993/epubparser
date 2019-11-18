@@ -22,6 +22,7 @@ class Kiter private constructor() {
     private var ip: String = "0.0.0.0"
     private var port: Int = 9696
     private var monitor = TimeCostMonitor()
+    private var serverReceivers = mutableListOf<ServerReceiver>()
 
     companion object {
         private val instance: Kiter by lazy(mode = LazyThreadSafetyMode.SYNCHRONIZED) { Kiter() }
@@ -36,48 +37,19 @@ class Kiter private constructor() {
         checkServer(context)
     }
 
-    /**
-     * [bookKey] 图书唯一标识
-     * [bookPath] 图书路径 可以是相对sd卡根目录 或 sd卡 或 assets目录
-     * [zipped]
-     */
-    fun openLocalBook(
-        context: Context,
-        bookKey: String,
-        bookPath: String,
-        zipped: Boolean = true,
-        receiver: BookReceiver? = null
-    ) {
-        val bookUrl = "http://$ip:$port${bookPath}"
-        val backUrl = "http://$ip:$port$PATH_BOOK_RESULT"
-        val bookKeyHash = bookKey.hashCode()
+    fun addServerReceiver(receiver: ServerReceiver?) {
         if (receiver != null) {
-            bookReceivers.put(bookKeyHash, receiver)
+            receiver.address(ip, port)
+            serverReceivers.add(receiver)
         }
-        val cache = bookMemoryCache.get(bookKeyHash)
-        val bookCache = cache?.book
-        if (bookCache != null) {
-            LogUtil.d("本地缓存")
-            receiver?.bookSuccess(bookCache)
-            return
-        }
-        checkServer(context, object : ServerCallback {
-            override fun onSuccess() {
-                BookService.openBook(
-                    context,
-                    BookRequest(bookKey, bookUrl, zipped, backUrl)
-                )
-            }
-
-            override fun onFailed(msg: String?) {
-                receiver?.bookFailed(bookKey, msg)
-            }
-        })
     }
 
-    /**
-     *
-     */
+    fun syncServer() {
+        for (receiver in serverReceivers) {
+            receiver.address(ip, port)
+        }
+    }
+
     fun openServerBook(
         context: Context,
         bookKey: String,
@@ -174,9 +146,10 @@ class Kiter private constructor() {
                         }
 
                         override fun onStarted() {
+                            monitor.onKey(HTTP_SERVER_INIT).onEnd()
                             BookService.syncServer(context, SyncRequest(ip, port))
                             callback?.onSuccess()
-                            monitor.onKey(HTTP_SERVER_INIT).onEnd()
+                            syncServer()
                         }
 
                         override fun onStopped() {

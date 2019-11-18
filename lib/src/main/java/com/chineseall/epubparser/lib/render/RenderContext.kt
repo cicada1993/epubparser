@@ -1,7 +1,8 @@
 package com.chineseall.epubparser.lib.render
 
 import android.content.Context
-import android.text.SpannableString
+import android.os.Build
+import android.text.*
 import com.chineseall.epubparser.lib.book.OpfPackage
 import com.chineseall.epubparser.lib.util.LogUtil
 
@@ -16,19 +17,16 @@ class RenderContext(
 
     // 已渲染总页数
     var pageSum = 0
+    var pages = mutableListOf<Page>()
     // 当前页
     var curPageIndex = 0
-
-    // 当前内容高度
-    var curConentHeight = 0
+    var curPage: Page? = null
+    // 当前页面内容高度
+    var curPageContentHeight = 0
+    var curPageContentParts = mutableListOf<SpannableString>()
+    var curPageContent = SpannableStringBuilder()
 
     var renderPlot = StringBuilder()
-
-    var pages = mutableListOf<Page>()
-
-    var curPage: Page? = null
-
-    //var ssb = SpannableStringBuilder()
 
     fun onChapterStart(index: Int) {
         this.curChapterIndex = index
@@ -41,17 +39,15 @@ class RenderContext(
 
     fun onBlock(index: Int) {
         this.curBlockIndex = index
-        // renderPlot.append("渲染block：$index\n")
     }
 
     fun onSection(sectionType: String, index: Int) {
         this.curSectionIndex = index
-        //renderPlot.append("渲染section：$sectionType $index\n")
     }
 
     fun onSectionRequireHeight(sectionType: String, requierHeight: Int, requireLines: Int = 0) {
         val canvasHeight = options.canvasHeight
-        val remainHeight = canvasHeight - curConentHeight
+        val remainHeight = canvasHeight - curPageContentHeight
         if (sectionType == "text") {
             renderPlot.append("渲染该段文字理论行数 $requireLines 理论高度：$requierHeight 当前剩余高度$remainHeight \n")
         } else {
@@ -60,7 +56,16 @@ class RenderContext(
     }
 
     fun onPageContent(content: SpannableString) {
-        curPage?.contentParts?.add(content)
+        curPage?.run {
+            contentParts.add(content)
+            // 自动计算当前页高度 计算高度时 两段之前应该只有一个换行符
+            if (contentParts.size >= 2) {
+                curPageContent.append("\n")
+            }
+            curPageContent.append(content)
+            val layout = createLayout(curPageContent)
+            curPageContentHeight = layout.height
+        }
     }
 
     fun onNewPage() {
@@ -69,11 +74,53 @@ class RenderContext(
         val newPage = Page(curPageIndex, mutableListOf())
         pages.add(newPage)
         curPage = newPage
-        curConentHeight = 0
+        curPageContentParts.clear()
+        curPageContentHeight = 0
+        curPageContent.clear()
         renderPlot.append("目前总页数 $pageSum   当前计算页 $curPageIndex\n")
     }
 
+    fun createLayout(
+        words: CharSequence
+    ): StaticLayout {
+        val spacingAdd = options.spacingAdd
+        val textPaint = options.textPaint
+        val canvasWidth = options.canvasWidth
+        val layout: StaticLayout
+        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
+            // 6.0之后使用Build模式
+            val builder = StaticLayout.Builder.obtain(
+                words,
+                0,
+                words.length,
+                textPaint,
+                canvasWidth
+            ).setAlignment(Layout.Alignment.ALIGN_NORMAL)
+                .setTextDirection(TextDirectionHeuristics.FIRSTSTRONG_LTR)
+                .setLineSpacing(spacingAdd.toFloat(), 1.0f)
+                .setIncludePad(false)
+                .setEllipsizedWidth(0)
+                .setEllipsize(null)
+                .setMaxLines(Integer.MAX_VALUE)
+            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
+                builder.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD)
+            }
+            layout = builder.build()
+        } else {
+            layout = StaticLayout(
+                words,
+                textPaint,
+                canvasWidth,
+                Layout.Alignment.ALIGN_NORMAL,
+                1.0f,
+                spacingAdd.toFloat(),
+                false
+            )
+        }
+        return layout
+    }
+
     fun printPlot() {
-       LogUtil.d(renderPlot.toString())
+        LogUtil.d(renderPlot.toString())
     }
 }

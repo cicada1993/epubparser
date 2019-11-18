@@ -1,6 +1,7 @@
 package com.chineseall.epubparser
 
 import android.content.Intent
+import android.net.Uri
 import android.os.Bundle
 import android.text.TextUtils
 import android.view.Menu
@@ -13,10 +14,7 @@ import androidx.appcompat.app.AppCompatActivity
 import com.alibaba.fastjson.JSON
 import com.chineseall.epubparser.lib.Kiter
 import com.chineseall.epubparser.lib.book.OpfPackage
-import com.chineseall.epubparser.lib.core.BOOK_OPEN
-import com.chineseall.epubparser.lib.core.BookReceiver
-import com.chineseall.epubparser.lib.core.CHAPTER_LOAD
-import com.chineseall.epubparser.lib.core.TimeCostMonitor
+import com.chineseall.epubparser.lib.core.*
 import com.chineseall.epubparser.lib.html.Chapter
 import com.chineseall.epubparser.lib.render.Page
 import com.chineseall.epubparser.lib.render.ReaderView
@@ -30,6 +28,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
     private val REQ_PERMISSION = 0x100
     private val REQ_SETTING = 0x200
     private lateinit var urlET: EditText
+    private lateinit var localFileBtn: Button
     private lateinit var openUnzippedBtn: Button
     private lateinit var openZippedBtn: Button
     private lateinit var bookInfoTV: TextView
@@ -48,9 +47,12 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
     private var monitor = TimeCostMonitor()
     private var totalPage = 0
     private var curPage = 0
+    private var ip: String = "0.0.0.0"
+    private var port: Int = 9696
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         setContentView(R.layout.activity_main)
+        Kiter.get().addServerReceiver(serverReceiver)
         checkAndReqPermission()
     }
 
@@ -165,6 +167,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
 
     fun initPage() {
         urlET = findViewById(R.id.et_book_url)
+        localFileBtn = findViewById(R.id.btn_local_file)
         openUnzippedBtn = findViewById(R.id.btn_open_unzipped)
         openZippedBtn = findViewById(R.id.btn_open_zipped)
         bookInfoTV = findViewById(R.id.tv_bookinfo)
@@ -182,6 +185,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
         pageNextTV = findViewById(R.id.tv_next_page)
         pageProgressTV = findViewById(R.id.tv_page_progress)
 
+        localFileBtn.setOnClickListener(this)
         openUnzippedBtn.setOnClickListener(this)
         openZippedBtn.setOnClickListener(this)
         chapterReadBtn.setOnClickListener(this)
@@ -197,6 +201,9 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
 
     override fun onClick(view: View?) {
         when (view?.id) {
+            R.id.btn_local_file -> {
+                browserLocalFile()
+            }
             R.id.btn_open_unzipped -> {
                 openBook(false)
             }
@@ -218,7 +225,15 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
         }
     }
 
+    private val serverReceiver = object : ServerReceiver() {
+        override fun address(ip: String, port: Int) {
+            this@MainActivity.ip = ip
+            this@MainActivity.port = port
+        }
+    }
+
     private val bookReceiver = object : BookReceiver() {
+
         override fun bookSuccess(book: OpfPackage) {
             fillBookInfo(book)
         }
@@ -245,6 +260,13 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
             curPage = index
             pageProgressTV.text = "$curPage / $totalPage"
         }
+    }
+
+    fun browserLocalFile() {
+        val url = "http://$ip:$port/"
+        val uri = Uri.parse(url)
+        val intent = Intent(Intent.ACTION_VIEW, uri)
+        startActivity(intent)
     }
 
     fun openBook(zipped: Boolean) {

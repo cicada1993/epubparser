@@ -1,6 +1,5 @@
 package com.chineseall.epubparser.lib.render
 
-import android.os.Build
 import android.text.*
 import com.chineseall.epubparser.lib.html.BaseNode
 import com.chineseall.epubparser.lib.html.ImageNode
@@ -67,56 +66,13 @@ class TextSection : RenderSection {
                 }
             }
         }
-        if(imageTexts.isNullOrEmpty()){
+        if (imageTexts.isNullOrEmpty()) {
 
-        }else{
+        } else {
             LogUtil.d("有文字图片 范围 0 ~ ${totalSB.length - 1}")
         }
         val totalPart = TextPagePart(SpannableString(totalSB), 0, totalSB.length - 1)
         divideText(renderContext, totalPart, true)
-    }
-
-    private fun createStaticLayout(
-        renderContext: RenderContext,
-        textPagePart: TextPagePart
-    ): StaticLayout {
-        val layout: StaticLayout
-        val sb = textPagePart.sb
-        val renderOptions = renderContext.options
-        val spacingAdd = renderOptions.spacingAdd
-        val textPaint = renderOptions.textPaint
-        val canvasWidth = renderOptions.canvasWidth
-        if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.M) {
-            // 6.0之后使用Build模式
-            val builder = StaticLayout.Builder.obtain(
-                sb,
-                0,
-                sb.length,
-                textPaint,
-                canvasWidth
-            ).setAlignment(Layout.Alignment.ALIGN_NORMAL)
-                .setTextDirection(TextDirectionHeuristics.FIRSTSTRONG_LTR)
-                .setLineSpacing(spacingAdd.toFloat(), 1.0f)
-                .setIncludePad(false)
-                .setEllipsizedWidth(0)
-                .setEllipsize(null)
-                .setMaxLines(Integer.MAX_VALUE)
-            if (Build.VERSION.SDK_INT >= Build.VERSION_CODES.O) {
-                builder.setJustificationMode(Layout.JUSTIFICATION_MODE_INTER_WORD)
-            }
-            layout = builder.build()
-        } else {
-            layout = StaticLayout(
-                sb,
-                textPaint,
-                canvasWidth,
-                Layout.Alignment.ALIGN_NORMAL,
-                1.0f,
-                spacingAdd.toFloat(),
-                false
-            )
-        }
-        return layout
     }
 
     private fun divideText(
@@ -126,13 +82,13 @@ class TextSection : RenderSection {
     ) {
         val renderOptions = renderContext.options
         val canvasHeight = renderOptions.canvasHeight
-        val textLayout = createStaticLayout(renderContext, textPagePart)
+        val textLayout = createLayout(renderContext, textPagePart)
         val requireHeight = textLayout.height
         val requireLines = textLayout.lineCount
         if (total) {
             renderContext.onSectionRequireHeight("text", requireHeight, requireLines)
         }
-        val remainHeight = canvasHeight - renderContext.curConentHeight
+        val remainHeight = canvasHeight - renderContext.curPageContentHeight
         if (requireHeight > remainHeight) {
             val sb = textPagePart.sb
             // 超出当前页剩余高度
@@ -141,20 +97,38 @@ class TextSection : RenderSection {
             if (remainLines >= requireLines) {
                 remainLines = requireLines - 1
             }
-            // 截取文本至未超出位置
-            val nextPageStart = textLayout.getLineStart(remainLines)
-            val curPartSB = SpannableString(sb.subSequence(0, nextPageStart))
-            // 计算该部分文本在整段文本中的位置
-            val curPartRawStart = textPagePart.rawStart
-            val curPartRawEnd = curPartRawStart + curPartSB.length - 1
-            val curPagePart = TextPagePart(
+            if (remainLines <= 0) {
+                renderContext.onNewPage()
+                divideText(renderContext, textPagePart)
+                return
+            }
+            // 定位在哪一行超出
+            var nextPageStart = textLayout.getLineStart(remainLines)
+            var curPartSB = SpannableString(sb.subSequence(0, nextPageStart))
+            var curPartRawStart = textPagePart.rawStart
+            var curPartRawEnd = curPartRawStart + curPartSB.length - 1
+            var curPagePart = TextPagePart(
                 curPartSB,
                 curPartRawStart,
                 curPartRawEnd,
                 renderContext.curPageIndex
             )
-            val curPartLayout = createStaticLayout(renderContext, curPagePart)
-            renderContext.curConentHeight += curPartLayout.height
+            var curPartLayout = createLayout(renderContext, curPagePart)
+            while (curPartLayout.height > remainHeight) {
+                remainLines--
+                nextPageStart = textLayout.getLineStart(remainLines)
+                curPartSB = SpannableString(sb.subSequence(0, nextPageStart))
+                // 计算该部分文本在整段文本中的位置
+                curPartRawStart = textPagePart.rawStart
+                curPartRawEnd = curPartRawStart + curPartSB.length - 1
+                curPagePart = TextPagePart(
+                    curPartSB,
+                    curPartRawStart,
+                    curPartRawEnd,
+                    renderContext.curPageIndex
+                )
+                curPartLayout = createLayout(renderContext, curPagePart)
+            }
             textPageParts.add(curPagePart)
             renderContext.onPageContent(curPagePart.sb)
             // 新建一页
@@ -171,11 +145,17 @@ class TextSection : RenderSection {
             )
             divideText(renderContext, remianPagePart)
         } else {
-            renderContext.curConentHeight += requireHeight
             textPagePart.pageIndex = renderContext.curPageIndex
             textPageParts.add(textPagePart)
             renderContext.onPageContent(textPagePart.sb)
         }
+    }
+
+    private fun createLayout(
+        renderContext: RenderContext,
+        textPagePart: TextPagePart
+    ): StaticLayout {
+        return renderContext.createLayout(textPagePart.sb)
     }
 
     class ImageText(

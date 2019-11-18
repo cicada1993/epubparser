@@ -3,7 +3,6 @@ package com.chineseall.epubparser.lib.render
 import android.text.Spannable
 import android.text.SpannableString
 import com.chineseall.epubparser.lib.html.ImageNode
-import com.chineseall.epubparser.lib.util.LogUtil
 
 // 图文区域
 class ImageSection(var imageNode: ImageNode?) :
@@ -22,13 +21,10 @@ class ImageSection(var imageNode: ImageNode?) :
         val requireHeight = node.showHeight + 2 * spacingAdd
         renderContext.onSectionRequireHeight("image", requireHeight)
         val canvasHeight = renderOptions.canvasHeight
-        val remainHeight = canvasHeight - renderContext.curConentHeight
+        val remainHeight = canvasHeight - renderContext.curPageContentHeight
         if (requireHeight > remainHeight) {
-            LogUtil.d("剩余空间不足以容纳")
-            // 新建页
             renderContext.onNewPage()
         }
-        renderContext.curConentHeight += requireHeight
         val imageSB = SpannableString("图")
         imageSB.setSpan(
             node.imageSpan(renderContext),

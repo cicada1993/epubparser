@@ -12,14 +12,27 @@
         android:layout_margin="25dp"
         android:orientation="vertical">
 
-        <EditText
-            android:id="@+id/et_book_url"
+        <LinearLayout
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
-            android:layout_marginTop="15dp"
-            android:background="@null"
-            android:textSize="13sp"
-            android:hint="图书地址" />
+            android:gravity="center_vertical">
+
+            <EditText
+                android:id="@+id/et_book_url"
+                android:layout_width="0dp"
+                android:layout_height="wrap_content"
+                android:layout_weight="1"
+                android:background="@null"
+                android:hint="图书地址"
+                android:textSize="13sp" />
+
+            <Button
+                android:id="@+id/btn_local_file"
+                android:layout_width="wrap_content"
+                android:layout_height="wrap_content"
+                android:text="本地资源" />
+        </LinearLayout>
+
 
         <LinearLayout
             android:layout_width="match_parent"
@@ -66,8 +79,8 @@
                 android:layout_weight="1"
                 android:background="@null"
                 android:hint="输入章节编号"
-                android:textSize="13sp"
-                android:inputType="numberDecimal" />
+                android:inputType="numberDecimal"
+                android:textSize="13sp" />
 
             <Button
                 android:id="@+id/btn_chapter_read"
@@ -115,7 +128,7 @@
             android:id="@+id/tv_page_progress"
             android:layout_width="100dp"
             android:layout_height="wrap_content"
-            android:gravity="center"/>
+            android:gravity="center" />
 
         <TextView
             android:id="@+id/tv_next_page"
@@ -128,8 +141,8 @@
         android:id="@+id/tv_chapter_title"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
-        android:height="25dp"
         android:layout_gravity="top|center_horizontal"
+        android:height="25dp"
         android:gravity="center"
         android:visibility="invisible" />
 
