@@ -10,8 +10,8 @@ class Chapter {
     var renderBlocks: MutableList<RenderBlock>? = null
 
     fun render(renderContext: RenderContext) {
-        renderContext.onNewPage()
         renderContext.onChapterStart(chapterIndex ?: -1)
+        renderContext.onNewPage()
         renderBlocks?.let { blocks ->
             for (block in blocks) {
                 block.render(renderContext)

@@ -29,6 +29,7 @@ class RenderContext(
     var renderPlot = StringBuilder()
 
     fun onChapterStart(index: Int) {
+        this.pages.clear()
         this.curChapterIndex = index
         renderPlot.append("渲染chapter：$index\n")
     }

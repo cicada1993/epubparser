@@ -1,7 +1,6 @@
 package com.chineseall.epubparser.lib.view;
 
 import android.graphics.Canvas;
-import android.graphics.Color;
 import android.graphics.Paint;
 import android.graphics.Rect;
 import android.graphics.drawable.Drawable;
@@ -127,30 +126,30 @@ public class BetterImageSpan extends ReplacementSpan {
         mDrawable.draw(canvas);
         canvas.translate(-x, -iconTop);
 
-        float b_ascent = mFontMetricsInt.ascent;
-        float b_descent = mFontMetricsInt.descent;
-        float b_top = mFontMetricsInt.top;
-        float b_bottom = mFontMetricsInt.bottom;
-        //绘制基线
-        paint.setColor(Color.RED);
-        canvas.drawLine(x, y, x + mWidth, y, paint);
-
-        //绘制 ascent 线
-        paint.setColor(Color.BLUE);
-        canvas.drawLine(x, y + b_ascent, x + mWidth, y + b_ascent, paint);
-
-        //绘制 descent 线
-        paint.setColor(Color.BLACK);
-        canvas.drawLine(x, y + b_descent, x + mWidth, y + b_descent, paint);
-
-        //绘制 top 线
-        paint.setColor(Color.GREEN);
-        canvas.drawLine(x, y + b_top, x + mWidth, y + b_top, paint);
-
-        //绘制 bottom 线
-        paint.setColor(Color.YELLOW);
-        canvas.drawLine(x, y + b_bottom, x + mWidth, y + b_bottom, paint);
-        paint.setColor(Color.parseColor("#ffffff"));
+//        float b_ascent = mFontMetricsInt.ascent;
+//        float b_descent = mFontMetricsInt.descent;
+//        float b_top = mFontMetricsInt.top;
+//        float b_bottom = mFontMetricsInt.bottom;
+//        //绘制基线
+//        paint.setColor(Color.RED);
+//        canvas.drawLine(x, y, x + mWidth, y, paint);
+//
+//        //绘制 ascent 线
+//        paint.setColor(Color.BLUE);
+//        canvas.drawLine(x, y + b_ascent, x + mWidth, y + b_ascent, paint);
+//
+//        //绘制 descent 线
+//        paint.setColor(Color.BLACK);
+//        canvas.drawLine(x, y + b_descent, x + mWidth, y + b_descent, paint);
+//
+//        //绘制 top 线
+//        paint.setColor(Color.GREEN);
+//        canvas.drawLine(x, y + b_top, x + mWidth, y + b_top, paint);
+//
+//        //绘制 bottom 线
+//        paint.setColor(Color.YELLOW);
+//        canvas.drawLine(x, y + b_bottom, x + mWidth, y + b_bottom, paint);
+//        paint.setColor(Color.parseColor("#ffffff"));
     }
 
     public void updateBounds() {
