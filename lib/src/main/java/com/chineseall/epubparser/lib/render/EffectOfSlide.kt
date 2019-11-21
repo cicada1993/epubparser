@@ -199,12 +199,13 @@ class EffectOfSlide(context: Context) {
         scrollAnim?.start()
     }
 
-    private fun resetData() {
+    fun resetData() {
         downX = -1f
         isMoveStart = false
         startMoveX = -1f
         startMoveVector = 0f
         curPageOffset = 0f
+        curMoveVector = 0f
         loadSuccess = false
     }
 

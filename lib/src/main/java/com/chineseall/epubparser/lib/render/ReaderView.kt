@@ -88,6 +88,7 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
             pages = it.pages
             renderReceiver?.onPages(chapter.chapterIndex!!, pages!!)
             // 渲染第一页
+            effect?.resetData()
             drawPage(curPageCanvas, 1)
             curPage = 1
             invalidate()
