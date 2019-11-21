@@ -1,5 +1,7 @@
 # epubparser
 本工程提供了一种安卓中epub电子书的解析方案：在子进程中利用WebView加载epub.js读取书籍内容，通过[AndServer](https://github.com/yanzhenjie/AndServer)向客户端回传结果
+# 效果演示
+![image](https://github.com/cicada1993/epubparser/blob/master/Screenrecorder-2019-11-18-13-36.gif)
 # 整体业务流程
 ![image](https://github.com/cicada1993/epubparser/blob/master/Untitled%20Diagram.png?raw=true)
 # 工程说明
