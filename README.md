@@ -1,6 +1,12 @@
 # epubparser
 本工程提供了一种安卓中epub电子书的解析方案：在子进程中利用WebView加载epub.js读取书籍内容，通过[AndServer](https://github.com/yanzhenjie/AndServer)向客户端回传结果
 # 效果演示
+目前自己动手实现了如下两种翻页效果，更多翻页效果参考[此项目](https://github.com/GarrettLance/Reader)，该项目的翻页效果可很容易集成到本工程中
+## 滑动翻页
+![image](https://github.com/cicada1993/epubparser/blob/master/slide.gif)
+## 覆盖翻页
+![image](https://github.com/cicada1993/epubparser/blob/master/cover.gif)
+# 功能演示
 ![image](https://github.com/cicada1993/epubparser/blob/master/Screenrecorder-2019-11-18-13-36.gif)
 # 整体业务流程
 ![image](https://github.com/cicada1993/epubparser/blob/master/Untitled%20Diagram.png?raw=true)
