@@ -25,11 +25,9 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
     private var curPageBitmap: Bitmap? = null
     private var preORnextPageCanvas: Canvas? = null
     private var preORnextPageBitmap: Bitmap? = null
-    private var effect: EffectOfSlide? = null
-    private val mPaperPaint = Paint()
+    private var effect: EffectOfCover? = null
 
     init {
-        mPaperPaint.xfermode = PorterDuffXfermode(PorterDuff.Mode.SCREEN)
         setWillNotDraw(false)
     }
 
@@ -42,7 +40,6 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
 
     override fun onDraw(canvas: Canvas?) {
         super.onDraw(canvas)
-        canvas?.drawPaint(mPaperPaint)
         effect?.onDraw(canvas)
     }
 
@@ -64,7 +61,7 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
             preORnextPageCanvas = Canvas(preORnextPageBitmap!!)
         }
         if (effect == null) {
-            effect = EffectOfSlide(context)
+            effect = EffectOfCover(context)
             effect!!.effectReceiver = SimpleEffectReceiver()
         }
         effect?.config(viewWidth, viewHeight, curPageBitmap, preORnextPageBitmap)
@@ -88,7 +85,6 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
             pages = it.pages
             renderReceiver?.onPages(chapter.chapterIndex!!, pages!!)
             // 渲染第一页
-            effect?.resetData()
             drawPage(curPageCanvas, 1)
             curPage = 1
             invalidate()
@@ -100,6 +96,7 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
         curPageCanvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         preORnextPageCanvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
         curPage = -1
+        effect?.resetData()
         invalidate()
     }
 
@@ -150,11 +147,15 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
     }
 
     fun nextPage() {
-        effect?.autoTurnPage(false)
+        if (hasNextPage()) {
+            effect?.autoTurnPage(false)
+        }
     }
 
     fun prePage() {
-        effect?.autoTurnPage(true)
+        if (hasPrePage()) {
+            effect?.autoTurnPage(true)
+        }
     }
 
     inner class SimpleEffectReceiver : EffectReceiver {

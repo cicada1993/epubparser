@@ -4,8 +4,7 @@ import android.animation.Animator
 import android.animation.TypeEvaluator
 import android.animation.ValueAnimator
 import android.content.Context
-import android.graphics.Bitmap
-import android.graphics.Canvas
+import android.graphics.*
 import android.view.MotionEvent
 import android.view.VelocityTracker
 import android.view.ViewConfiguration
@@ -13,11 +12,7 @@ import android.view.animation.DecelerateInterpolator
 import com.chineseall.epubparser.lib.util.LogUtil
 import kotlin.math.abs
 
-/**
- * 水平滑动切换页面
- */
-class EffectOfSlide(context: Context) {
-
+class EffectOfCover(context: Context) {
     var effectWidth = 0
     var effectHeight = 0
     var curPageBitmap: Bitmap? = null
@@ -26,6 +21,8 @@ class EffectOfSlide(context: Context) {
     var longClickTime = 0
     var touchSlop = 0
     var effectReceiver: EffectReceiver? = null
+    val shadowPaint = Paint()
+    val shadowWidth = 10f
 
     var downX: Float = -1f
     // 滑动是否生效
@@ -36,17 +33,32 @@ class EffectOfSlide(context: Context) {
     var startMoveVector: Float = 0f
     // 当前滑动向量
     var curMoveVector: Float = 0f
-    // 当前页偏移距离 由向量curMoveVector累加得到
-    var curPageOffset = 0f
     // 页面加载是否成功
     var loadSuccess = false
     var anim_rate = 0f
     var scrollAnim: ValueAnimator? = null
+    // 两页分界位置
+    var curDivideX = -1f
+    // 滑向终点位置
+    var slideTargetX = -1f
+
+    var moveDiff = 0f
 
     init {
         val viewConfiguration = ViewConfiguration.get(context)
         longClickTime = ViewConfiguration.getLongPressTimeout()
         touchSlop = viewConfiguration.scaledPagingTouchSlop
+        shadowPaint.isAntiAlias = true
+        shadowPaint.shader = LinearGradient(
+            0f,
+            0f,
+            shadowWidth,
+            0f,
+            0x55111111,
+            0x00111111,
+            Shader.TileMode.MIRROR
+        )
+        shadowPaint.setXfermode(PorterDuffXfermode(PorterDuff.Mode.XOR))
     }
 
     fun config(
@@ -62,30 +74,29 @@ class EffectOfSlide(context: Context) {
         this.anim_rate = effectWidth / 600f
     }
 
-    /**
-     * 自动翻页
-     */
     fun autoTurnPage(pre: Boolean) {
-        // 只绘制当前页
         resetData()
         effectReceiver?.drawCurPage()
         effectReceiver?.invalidate()
-        var toX = 0f
+        var divideFrom = -1f
+        var divideTo = -1f
         if (pre) {
-            curMoveVector = 0.1f
+            startMoveVector = 0.1f
+            divideFrom = 0f
+            divideTo = effectWidth.toFloat()
             loadSuccess = effectReceiver?.drawPrePage() ?: false
             if (loadSuccess) {
-                toX = effectWidth.toFloat()
                 effectReceiver?.toPrePage()
-                scrollMoveVector(0f, toX)
+                scroll(divideFrom, divideTo)
             }
         } else {
-            curMoveVector = -0.1f
+            startMoveVector = -0.1f
+            divideFrom = effectWidth.toFloat()
+            divideTo = -shadowWidth
             loadSuccess = effectReceiver?.drawNextPage() ?: false
             if (loadSuccess) {
-                toX = -effectWidth.toFloat()
                 effectReceiver?.toNextPage()
-                scrollMoveVector(0f, toX)
+                scroll(divideFrom, divideTo)
             }
         }
     }
@@ -103,11 +114,10 @@ class EffectOfSlide(context: Context) {
                         // 结束滚动动画
                         scrollAnim?.cancel()
                     }
+                    downX = touchX
                     resetData()
-                    // 只绘制当前页
                     effectReceiver?.drawCurPage()
                     effectReceiver?.invalidate()
-                    downX = touchX
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val disFromDown = touchX - downX
@@ -121,41 +131,51 @@ class EffectOfSlide(context: Context) {
                             if (startMoveVector > 0) {
                                 LogUtil.d("意图加载上一页")
                                 loadSuccess = effectReceiver?.drawPrePage() ?: false
+                                slideTargetX = effectWidth.toFloat()
                             } else if (startMoveVector < 0) {
                                 LogUtil.d("意图加载下一页")
                                 loadSuccess = effectReceiver?.drawNextPage() ?: false
+                                slideTargetX = 0f - shadowWidth
                             }
                         }
                         if (isMoveStart) {
                             curMoveVector = touchX - startMoveX
-                            if (loadSuccess && curMoveVector * startMoveVector > 0) {
-                                // 表示单向加载页面
-                                curPageOffset = +curMoveVector
-                                effectReceiver?.invalidate()
+                            if (loadSuccess) {
+                                if (startMoveVector > 0) {
+                                    // 上一页覆盖在当前页上
+                                    if (touchX == curDivideX) {
+                                        LogUtil.d("junk")
+                                    }
+                                    curDivideX = touchX
+                                    moveDiff = curDivideX
+                                    effectReceiver?.invalidate()
+                                } else if (startMoveVector < 0 && curMoveVector < 0) {
+                                    // 当前页覆盖在下一页上
+                                    curDivideX = effectWidth + curMoveVector
+                                    moveDiff = curMoveVector
+                                    effectReceiver?.invalidate()
+                                }
                             }
                         }
                     }
                 }
                 MotionEvent.ACTION_CANCEL, MotionEvent.ACTION_UP -> {
-                    // 得到抬起时刻滑动速度
                     if (loadSuccess) {
                         velocityTracker.computeCurrentVelocity(100)
                         val xMoveVelocity = velocityTracker.xVelocity
-                        if (startMoveVector * xMoveVelocity > 0 || abs(curPageOffset) > effectWidth / 4f) {
-                            // 初始滑动方向和抬起时刻方向相同、当前页偏移超过阈值 按初始滑动方向决定翻页
+                        if (startMoveVector * xMoveVelocity > 0 || abs(moveDiff) > effectWidth / 4f) {
                             if (startMoveVector > 0) {
-                                LogUtil.d("滑动到上一页 $startMoveVector $curMoveVector $xMoveVelocity")
-                                scrollMoveVector(curMoveVector, effectWidth.toFloat())
                                 effectReceiver?.toPrePage()
-                            } else if (startMoveVector < 0) {
-                                LogUtil.d("滑动到下一$startMoveVector $curMoveVector $xMoveVelocity")
-                                scrollMoveVector(curMoveVector, -effectWidth.toFloat())
+                            } else {
                                 effectReceiver?.toNextPage()
                             }
+                            scroll(curDivideX, slideTargetX)
                         } else {
-                            // 否则回退到当前页
-                            LogUtil.d("回到当前页  $startMoveVector $curMoveVector $xMoveVelocity")
-                            scrollMoveVector(curPageOffset, 0f)
+                            LogUtil.d("回退到当前页")
+                            scroll(
+                                curDivideX,
+                                if (startMoveVector > 0) 0f - shadowWidth else effectWidth.toFloat()
+                            )
                         }
                     }
                 }
@@ -166,7 +186,7 @@ class EffectOfSlide(context: Context) {
         }
     }
 
-    private fun scrollMoveVector(from: Float, to: Float) {
+    private fun scroll(from: Float, to: Float) {
         val animDiff = abs(to - from)
         scrollAnim = ValueAnimator.ofFloat(from, to)
         scrollAnim?.interpolator = DecelerateInterpolator()
@@ -174,7 +194,7 @@ class EffectOfSlide(context: Context) {
         scrollAnim?.setEvaluator(object : TypeEvaluator<Float> {
             override fun evaluate(fraction: Float, startValue: Float?, endValue: Float?): Float {
                 val tmp = startValue!! + fraction * (endValue!! - startValue!!)
-                curMoveVector = tmp
+                curDivideX = tmp
                 effectReceiver?.invalidate()
                 return tmp
             }
@@ -199,42 +219,72 @@ class EffectOfSlide(context: Context) {
         scrollAnim?.start()
     }
 
+
     fun resetData() {
-        downX = -1f
-        isMoveStart = false
         startMoveX = -1f
         startMoveVector = 0f
-        curPageOffset = 0f
         curMoveVector = 0f
         loadSuccess = false
+        isMoveStart = false
+        moveDiff = 0f
     }
 
     fun onDraw(canvas: Canvas?) {
         drawCurPage(canvas)
         drawPreORnextPage(canvas)
+        if (startMoveVector != 0f) {
+            drawShadow(canvas)
+        }
     }
 
     private fun drawCurPage(canvas: Canvas?) {
         curPageBitmap?.let {
-            canvas?.save()
-            canvas?.drawBitmap(it, curMoveVector, 0f, null)
-            canvas?.restore()
+            if (startMoveVector > 0) {
+                canvas?.save()
+                canvas?.clipRect(curDivideX, 0f, effectWidth.toFloat(), effectHeight.toFloat())
+                canvas?.drawBitmap(it, 0f, 0f, null)
+                canvas?.restore()
+            } else if (startMoveVector < 0) {
+                canvas?.save()
+                canvas?.drawBitmap(it, curDivideX - effectWidth, 0f, null)
+                canvas?.restore()
+            } else {
+                canvas?.save()
+                canvas?.drawBitmap(it, 0f, 0f, null)
+                canvas?.restore()
+            }
         }
     }
 
     private fun drawPreORnextPage(canvas: Canvas?) {
         preORnextPageBitmap?.let {
-            if (curMoveVector > 0) {
+            if (startMoveVector > 0) {
                 canvas?.save()
-                canvas?.drawBitmap(it, -effectWidth + curMoveVector, 0f, null)
+                canvas?.drawBitmap(it, curDivideX - effectWidth, 0f, null)
                 canvas?.restore()
-            } else if (curMoveVector < 0) {
+            } else if (startMoveVector < 0) {
                 canvas?.save()
-                canvas?.drawBitmap(it, effectWidth + curMoveVector, 0f, null)
+                canvas?.clipRect(curDivideX, 0f, effectWidth.toFloat(), effectHeight.toFloat())
+                canvas?.drawBitmap(it, 0f, 0f, null)
                 canvas?.restore()
             } else {
 
             }
         }
     }
+
+    private fun drawShadow(canvas: Canvas?) {
+        canvas?.save()
+        canvas?.translate(curDivideX, 0f)
+        canvas?.drawRect(
+            0f,
+            0f,
+            shadowWidth,
+            effectHeight.toFloat(),
+            shadowPaint
+        )
+        canvas?.restore()
+    }
+
+
 }
