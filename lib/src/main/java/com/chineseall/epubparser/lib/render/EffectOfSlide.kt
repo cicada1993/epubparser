@@ -27,6 +27,7 @@ class EffectOfSlide(context: Context) {
     var touchSlop = 0
     var effectReceiver: EffectReceiver? = null
 
+    var downTime: Long = -1L
     var downX: Float = -1f
     // 滑动是否生效
     var isMoveStart = false
@@ -96,6 +97,7 @@ class EffectOfSlide(context: Context) {
                 return false
             }
             val touchX = event.x
+            val touchY = event.y
             velocityTracker.addMovement(event)
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -108,6 +110,7 @@ class EffectOfSlide(context: Context) {
                     effectReceiver?.drawCurPage()
                     effectReceiver?.invalidate()
                     downX = touchX
+                    downTime = System.currentTimeMillis()
                 }
                 MotionEvent.ACTION_MOVE -> {
                     val disFromDown = touchX - downX
@@ -156,6 +159,14 @@ class EffectOfSlide(context: Context) {
                             // 否则回退到当前页
                             LogUtil.d("回到当前页  $startMoveVector $curMoveVector $xMoveVelocity")
                             scrollMoveVector(curPageOffset, 0f)
+                        }
+                    } else if (!isMoveStart) {
+                        if (System.currentTimeMillis() - downTime > longClickTime) {
+                            // 长按
+                            effectReceiver?.onPageLongClick(touchX, touchY)
+                        } else {
+                            // 点击
+                            effectReceiver?.onPageClick(touchX, touchY)
                         }
                     }
                 }

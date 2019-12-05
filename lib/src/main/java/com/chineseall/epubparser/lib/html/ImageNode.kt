@@ -1,8 +1,6 @@
 package com.chineseall.epubparser.lib.html
 
 import android.graphics.drawable.Drawable
-import android.text.Spannable
-import android.text.SpannableString
 import android.text.style.ImageSpan
 import com.chineseall.epubparser.lib.render.ImageSection
 import com.chineseall.epubparser.lib.render.RenderContext
@@ -37,23 +35,6 @@ class ImageNode(
                 val metaData = BitmapUtil.decodeFromBase64Data(base64Data)
                 width = metaData.dimensions!!.first
                 height = metaData.dimensions!!.second
-                imageDrawable = BitmapUtil.drawableFromBase64Data(renderContext.context, base64Data)
-                showWidth = imageDrawable!!.intrinsicWidth
-                showHeight = imageDrawable!!.intrinsicHeight
-                val renderOptions = renderContext.options
-                var horiOff = 0
-                if (isWord()) {
-                    val textPaint = renderOptions.textPaint
-                    showWidth = textPaint.textSize.toInt()
-                } else {
-                    val canvasWidth = renderOptions.canvasWidth
-                    if (showWidth > canvasWidth * 4 / 5) {
-                        showWidth = canvasWidth * 4 / 5
-                    }
-                    horiOff = (canvasWidth - showWidth) / 2
-                }
-                showHeight = showWidth * height / width
-                imageDrawable!!.setBounds(horiOff, 0, showWidth + horiOff, showHeight)
                 decoded = true
             } catch (e: Exception) {
                 LogUtil.d(href)
@@ -61,16 +42,41 @@ class ImageNode(
         }
     }
 
-    private fun isWord(): Boolean {
+    fun isWord(): Boolean {
         return width < 80 && height < 80 && (pre is TextNode || next is TextNode)
     }
 
     fun imageSpan(renderContext: RenderContext): BetterImageSpan {
         decode(renderContext)
-        return BetterImageSpan(
+        imageDrawable = BitmapUtil.drawableFromBase64Data(renderContext.context, base64Data)
+        showWidth = imageDrawable!!.intrinsicWidth
+        showHeight = imageDrawable!!.intrinsicHeight
+        val renderOptions = renderContext.options
+        var horiOff = 0
+        if (isWord()) {
+            val textPaint = renderOptions.textPaint
+            showWidth = textPaint.textSize.toInt()
+            showHeight = showWidth * height / width
+        } else {
+            val canvasWidth = renderOptions.canvasWidth
+            val canvasHeight = renderOptions.canvasHeight
+            if (showWidth > canvasWidth * 4 / 5) {
+                showWidth = canvasWidth * 4 / 5
+            }
+            showHeight = showWidth * height / width
+            if (showHeight > canvasHeight * 4 / 5) {
+                showHeight = canvasHeight * 4 / 5
+                showWidth = showHeight * width / height
+            }
+            horiOff = (canvasWidth - showWidth) / 2
+        }
+        imageDrawable!!.setBounds(horiOff, 0, showWidth + horiOff, showHeight)
+        val imageSpan = BetterImageSpan(
             imageDrawable,
             BetterImageSpan.normalizeAlignment(ImageSpan.ALIGN_CENTER)
         )
+        imageSpan.imageNode = this
+        return imageSpan
     }
 
     override fun newSection(): Boolean {

@@ -12,7 +12,7 @@ import kotlin.math.floor
 class TextSection : RenderSection {
     var nodes: MutableList<BaseNode>? = null
     var imageTexts = mutableListOf<ImageText>()
-    var textPageParts = mutableListOf<TextPagePart>()
+    var textPageParts = mutableListOf<PagePart>()
     fun appendNode(node: BaseNode) {
         if (nodes == null) {
             nodes = mutableListOf()
@@ -26,14 +26,14 @@ class TextSection : RenderSection {
             measure(renderContext)
             for (part in textPageParts) {
                 val rawRange = IntRange(part.rawStart, part.rawEnd)
-                val sb = part.sb
+                val ss = part.ss
                 // 还原图片文字
                 for (imageText in imageTexts) {
                     if (rawRange.contains(imageText.rawPosition)) {
                         val imageNode = imageText.imageNode
                         val partPosition = imageText.rawPosition - part.rawStart
                         LogUtil.d("${part.rawStart} ${part.rawEnd} ${imageText.rawPosition}")
-                        sb.setSpan(
+                        ss.setSpan(
                             imageNode.imageSpan(renderContext),
                             partPosition,
                             partPosition + 1,
@@ -71,13 +71,14 @@ class TextSection : RenderSection {
         } else {
             LogUtil.d("有文字图片 范围 0 ~ ${totalSB.length - 1}")
         }
-        val totalPart = TextPagePart(SpannableString(totalSB), 0, totalSB.length - 1)
+        val totalSS = SpannableString(totalSB)
+        val totalPart = PagePart(totalSS, 0, totalSS.length - 1)
         divideText(renderContext, totalPart, true)
     }
 
     private fun divideText(
         renderContext: RenderContext,
-        textPagePart: TextPagePart,
+        textPagePart: PagePart,
         total: Boolean = false
     ) {
         val renderOptions = renderContext.options
@@ -90,7 +91,7 @@ class TextSection : RenderSection {
         }
         val remainHeight = canvasHeight - renderContext.curPageContentHeight
         if (requireHeight > remainHeight) {
-            val sb = textPagePart.sb
+            val ss = textPagePart.ss
             // 超出当前页剩余高度
             val avHeight = 1.0f * requireHeight / requireLines
             var remainLines = floor(remainHeight / avHeight).toInt()
@@ -104,11 +105,11 @@ class TextSection : RenderSection {
             }
             // 定位在哪一行超出
             var nextPageStart = textLayout.getLineStart(remainLines)
-            var curPartSB = SpannableString(sb.subSequence(0, nextPageStart))
+            var curPartSS = SpannableString(ss.subSequence(0, nextPageStart))
             var curPartRawStart = textPagePart.rawStart
-            var curPartRawEnd = curPartRawStart + curPartSB.length - 1
-            var curPagePart = TextPagePart(
-                curPartSB,
+            var curPartRawEnd = curPartRawStart + curPartSS.length - 1
+            var curPagePart = PagePart(
+                curPartSS,
                 curPartRawStart,
                 curPartRawEnd,
                 renderContext.curPageIndex
@@ -117,12 +118,12 @@ class TextSection : RenderSection {
             while (curPartLayout.height > remainHeight) {
                 remainLines--
                 nextPageStart = textLayout.getLineStart(remainLines)
-                curPartSB = SpannableString(sb.subSequence(0, nextPageStart))
+                curPartSS = SpannableString(ss.subSequence(0, nextPageStart))
                 // 计算该部分文本在整段文本中的位置
                 curPartRawStart = textPagePart.rawStart
-                curPartRawEnd = curPartRawStart + curPartSB.length - 1
-                curPagePart = TextPagePart(
-                    curPartSB,
+                curPartRawEnd = curPartRawStart + curPartSS.length - 1
+                curPagePart = PagePart(
+                    curPartSS,
                     curPartRawStart,
                     curPartRawEnd,
                     renderContext.curPageIndex
@@ -130,15 +131,15 @@ class TextSection : RenderSection {
                 curPartLayout = createLayout(renderContext, curPagePart)
             }
             textPageParts.add(curPagePart)
-            renderContext.onPageContent(curPagePart.sb)
+            renderContext.onPagePart(curPagePart)
             // 新建一页
             renderContext.onNewPage()
             // 处理剩余的
-            val remainSB = SpannableString(sb.subSequence(nextPageStart, sb.length))
+            val remainSS = SpannableString(ss.subSequence(nextPageStart, ss.length))
             val remainPartRawStart = curPartRawEnd + 1
             val remainPartRawEnd = textPagePart.rawEnd
-            val remianPagePart = TextPagePart(
-                remainSB,
+            val remianPagePart = PagePart(
+                remainSS,
                 remainPartRawStart,
                 remainPartRawEnd,
                 renderContext.curPageIndex
@@ -147,27 +148,19 @@ class TextSection : RenderSection {
         } else {
             textPagePart.pageIndex = renderContext.curPageIndex
             textPageParts.add(textPagePart)
-            renderContext.onPageContent(textPagePart.sb)
+            renderContext.onPagePart(textPagePart)
         }
     }
 
     private fun createLayout(
         renderContext: RenderContext,
-        textPagePart: TextPagePart
+        textPagePart: PagePart
     ): StaticLayout {
-        return renderContext.createLayout(textPagePart.sb)
+        return renderContext.createLayout(textPagePart.ss)
     }
 
     class ImageText(
         val imageNode: ImageNode,
         val rawPosition: Int
     )
-
-    class TextPagePart(
-        val sb: SpannableString,
-        val rawStart: Int,
-        val rawEnd: Int,
-        var pageIndex: Int = -1
-    )
-
 }

@@ -5,6 +5,7 @@ import android.graphics.*
 import android.graphics.Color.parseColor
 import android.graphics.Paint.ANTI_ALIAS_FLAG
 import android.text.SpannableStringBuilder
+import android.text.Spanned
 import android.text.TextPaint
 import android.util.AttributeSet
 import android.view.MotionEvent
@@ -13,6 +14,8 @@ import com.chineseall.epubparser.lib.book.OpfPackage
 import com.chineseall.epubparser.lib.html.Chapter
 import com.chineseall.epubparser.lib.util.LogUtil
 import com.chineseall.epubparser.lib.util.ScreenUtil
+import com.chineseall.epubparser.lib.util.ToastUtil
+import com.chineseall.epubparser.lib.view.BetterLineBgSpan
 import com.chineseall.epubparser.lib.view.SerifTextView
 
 
@@ -43,7 +46,13 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
         effect?.onDraw(canvas)
     }
 
-    fun render(book: OpfPackage?, chapter: Chapter, receiver: RenderReceiver? = null) {
+    fun render(
+        renderContext: RenderContext,
+        chapter: Chapter,
+        label: PagePart? = null,
+        receiver: RenderReceiver? = null
+    ) {
+        this.renderContext = renderContext
         renderReceiver = receiver
         val viewWidth = width
         val viewHeight = height
@@ -65,30 +74,25 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
             effect!!.effectReceiver = SimpleEffectReceiver()
         }
         effect?.config(viewWidth, viewHeight, curPageBitmap, preORnextPageBitmap)
-        // 创建RenderContext
-        if (renderContext == null) {
-            val textPaint = TextPaint(ANTI_ALIAS_FLAG)
-            textPaint.color = parseColor("#3F3737")
-            textPaint.textSize = ScreenUtil.spToPx(context, 15f)
-            textPaint.typeface = SerifTextView.serifTypefaces[SerifTextView.MEDIUM]
-            val canvasWidth = viewWidth * 19 / 20
-            val canvasHeight = viewHeight * 19 / 20
-            LogUtil.d("readerview size is $canvasWidth / $canvasHeight")
-            val renderOptions = RenderOptions(canvasWidth, canvasHeight, textPaint)
-            renderOptions.spacingAdd = 10
-            renderContext = RenderContext(context, renderOptions, book)
-        }
         renderContext?.let {
             // 开始分页
+            it.clear()
             chapter.render(it)
             it.printPlot()
             pages = it.pages
             renderReceiver?.onPages(chapter.chapterIndex!!, pages!!)
-            // 渲染第一页
-            drawPage(curPageCanvas, 1)
-            curPage = 1
+            // 渲染书签所在页 没有则默认第一页
+            var initPageIndex = 1
+            for (page in pages!!) {
+                if (page.hasLabel(label)) {
+                    initPageIndex = page.index
+                    LogUtil.d("找到书签")
+                    break
+                }
+            }
+            drawPage(curPageCanvas, initPageIndex)
+            curPage = initPageIndex
             invalidate()
-            renderReceiver?.onRenderPage(curPage)
         }
     }
 
@@ -108,26 +112,32 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
                 if (target.layout == null) {
                     val ssb = SpannableStringBuilder()
                     val size = target.contentParts.size
-                    for ((index, content) in target.contentParts.withIndex()) {
-                        ssb.append(content)
+                    for ((index, contentPart) in target.contentParts.withIndex()) {
+                        ssb.append(contentPart.ss)
                         if (index < size - 1) {
                             ssb.append("\n")
                         }
                     }
+                    ssb.setSpan(
+                        BetterLineBgSpan(target),
+                        0,
+                        ssb.length,
+                        Spanned.SPAN_INCLUSIVE_EXCLUSIVE
+                    )
                     target.layout = renderContext?.createLayout(ssb)
                 }
                 canvas?.drawColor(Color.TRANSPARENT, PorterDuff.Mode.CLEAR)
                 // 把内容画在正中间
-                val canvasHeight = canvas?.height ?: 0
-                val canvasWidth = canvas?.width ?: 0
+                val viewHeight = canvas?.height ?: 0
+                val viewWidth = canvas?.width ?: 0
                 val renderOptions = renderContext?.options
                 val contentHeight = renderOptions?.canvasHeight ?: 0
                 val contentWidth = renderOptions?.canvasWidth ?: 0
                 canvas?.save()
-                canvas?.translate(
-                    (canvasWidth - contentWidth) / 2f,
-                    (canvasHeight - contentHeight) / 2f
-                )
+                val dx = (viewWidth - contentWidth) / 2f
+                val dy = (viewHeight - contentHeight) / 2f
+                target.axisOriginOffset = Pair(dx, dy)
+                canvas?.translate(dx, dy)
                 target.layout?.draw(canvas)
                 canvas?.restore()
             }
@@ -188,14 +198,38 @@ class ReaderView(context: Context, attrs: AttributeSet? = null) : View(context, 
         override fun toPrePage() {
             if (hasPrePage()) {
                 curPage--
-                renderReceiver?.onRenderPage(curPage)
+                renderReceiver?.onRenderPage(curPage, pages!![curPage - 1].provideLabel())
             }
         }
 
         override fun toNextPage() {
             if (hasNextPage()) {
                 curPage++
-                renderReceiver?.onRenderPage(curPage)
+                renderReceiver?.onRenderPage(curPage, pages!![curPage - 1].provideLabel())
+            }
+        }
+
+
+        override fun onPageClick(x: Float, y: Float) {
+            pages?.let {
+                if (curPage >= 1 && curPage <= it.size) {
+                    val target = it[curPage - 1]
+                    val touchResult = target.onPageClick(x, y)
+                    touchResult.print()
+                    if (touchResult.isImageWord) {
+                        ToastUtil.show(context, touchResult.imageSpan?.imageNode?.alt)
+                    }
+                }
+            }
+        }
+
+        override fun onPageLongClick(x: Float, y: Float) {
+            pages?.let {
+                if (curPage >= 1 && curPage <= it.size) {
+                    val target = it[curPage - 1]
+                    val touchResult = target.onPageLongClick(x, y)
+                    touchResult.print()
+                }
             }
         }
     }

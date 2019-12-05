@@ -32,6 +32,13 @@ class ImageSection(var imageNode: ImageNode?) :
             imageSB.length,
             Spannable.SPAN_INCLUSIVE_EXCLUSIVE
         )
-        renderContext.onPageContent(imageSB)
+        renderContext.onPagePart(
+            PagePart(
+                imageSB,
+                0,
+                imageSB.length - 1,
+                renderContext.curPageIndex
+            )
+        )
     }
 }

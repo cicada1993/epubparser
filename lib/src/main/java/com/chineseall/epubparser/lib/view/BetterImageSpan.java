@@ -9,6 +9,8 @@ import android.text.style.ReplacementSpan;
 
 import androidx.annotation.IntDef;
 
+import com.chineseall.epubparser.lib.html.ImageNode;
+
 import java.lang.annotation.Retention;
 import java.lang.annotation.RetentionPolicy;
 
@@ -58,6 +60,7 @@ public class BetterImageSpan extends ReplacementSpan {
     private final int mAlignment;
     private final Paint.FontMetricsInt mFontMetricsInt = new Paint.FontMetricsInt();
     private final Drawable mDrawable;
+    public ImageNode imageNode;
 
     public BetterImageSpan(Drawable drawable) {
         this(drawable, ALIGN_BASELINE);
@@ -157,6 +160,10 @@ public class BetterImageSpan extends ReplacementSpan {
 
         mWidth = mBounds.width();
         mHeight = mBounds.height();
+    }
+
+    public Rect getBounds() {
+        return mBounds;
     }
 
     private int getOffsetAboveBaseline(Paint.FontMetricsInt fm) {

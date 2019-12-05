@@ -24,6 +24,7 @@ class EffectOfCover(context: Context) {
     val shadowPaint = Paint()
     val shadowWidth = 10f
 
+    var downTime: Long = -1L
     var downX: Float = -1f
     // 滑动是否生效
     var isMoveStart = false
@@ -107,6 +108,7 @@ class EffectOfCover(context: Context) {
                 return false
             }
             val touchX = event.x
+            val touchY = event.y
             velocityTracker.addMovement(event)
             when (event.action) {
                 MotionEvent.ACTION_DOWN -> {
@@ -115,6 +117,7 @@ class EffectOfCover(context: Context) {
                         scrollAnim?.cancel()
                     }
                     downX = touchX
+                    downTime = System.currentTimeMillis()
                     resetData()
                     effectReceiver?.drawCurPage()
                     effectReceiver?.invalidate()
@@ -176,6 +179,14 @@ class EffectOfCover(context: Context) {
                                 curDivideX,
                                 if (startMoveVector > 0) 0f - shadowWidth else effectWidth.toFloat()
                             )
+                        }
+                    } else if (!isMoveStart) {
+                        if (System.currentTimeMillis() - downTime > longClickTime) {
+                            // 长按
+                            effectReceiver?.onPageLongClick(touchX, touchY)
+                        } else {
+                            // 点击
+                            effectReceiver?.onPageClick(touchX, touchY)
                         }
                     }
                 }

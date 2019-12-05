@@ -5,12 +5,16 @@ import android.os.Build
 import android.text.*
 import com.chineseall.epubparser.lib.book.OpfPackage
 import com.chineseall.epubparser.lib.util.LogUtil
+import com.chineseall.epubparser.lib.util.ScreenUtil
 
 class RenderContext(
     val context: Context,
     val options: RenderOptions,
     val book: OpfPackage?
 ) {
+    fun setTextSize(textSize:Float){
+        options.textPaint.textSize =  ScreenUtil.spToPx(context, textSize)
+    }
     var curChapterIndex: Int = -1
     var curBlockIndex: Int? = -1
     var curSectionIndex: Int? = -1
@@ -27,6 +31,19 @@ class RenderContext(
     var curPageContent = SpannableStringBuilder()
 
     var renderPlot = StringBuilder()
+
+    fun clear() {
+        curChapterIndex = -1
+        curBlockIndex = -1
+        curSectionIndex = -1
+        pageSum = 0
+        pages.clear()
+        curPageIndex = 0
+        curPageContentHeight = 0
+        curPageContentParts.clear()
+        curPageContent.clear()
+        renderPlot.clear()
+    }
 
     fun onChapterStart(index: Int) {
         this.pages.clear()
@@ -56,14 +73,17 @@ class RenderContext(
         }
     }
 
-    fun onPageContent(content: SpannableString) {
+    fun onPagePart(element: PagePart) {
         curPage?.run {
-            contentParts.add(content)
+            element.curChapterIndex = curChapterIndex
+            element.curBlockIndex = curBlockIndex
+            element.curSectionIndex = curSectionIndex
+            contentParts.add(element)
             // 自动计算当前页高度 计算高度时 两段之前应该只有一个换行符
             if (contentParts.size >= 2) {
                 curPageContent.append("\n")
             }
-            curPageContent.append(content)
+            curPageContent.append(element.ss)
             val layout = createLayout(curPageContent)
             curPageContentHeight = layout.height
         }

@@ -1,8 +1,11 @@
 package com.chineseall.epubparser
 
 import android.content.Intent
+import android.graphics.Color
+import android.graphics.Paint
 import android.net.Uri
 import android.os.Bundle
+import android.text.TextPaint
 import android.text.TextUtils
 import android.view.Menu
 import android.view.MenuItem
@@ -16,10 +19,11 @@ import com.chineseall.epubparser.lib.Kiter
 import com.chineseall.epubparser.lib.book.OpfPackage
 import com.chineseall.epubparser.lib.core.*
 import com.chineseall.epubparser.lib.html.Chapter
-import com.chineseall.epubparser.lib.render.Page
-import com.chineseall.epubparser.lib.render.ReaderView
-import com.chineseall.epubparser.lib.render.RenderReceiver
+import com.chineseall.epubparser.lib.render.*
+import com.chineseall.epubparser.lib.util.LogUtil
 import com.chineseall.epubparser.lib.util.MD5Util
+import com.chineseall.epubparser.lib.util.ScreenUtil
+import com.chineseall.epubparser.lib.view.SerifTextView
 import pub.devrel.easypermissions.*
 import java.util.*
 
@@ -32,6 +36,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
     private lateinit var openUnzippedBtn: Button
     private lateinit var openZippedBtn: Button
     private lateinit var bookInfoTV: TextView
+    private lateinit var fontSizeET: EditText
     private lateinit var chapterIndexET: EditText
     private lateinit var chapterReadBtn: Button
     private lateinit var openCostTimeTV: TextView
@@ -47,6 +52,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
     private var monitor = TimeCostMonitor()
     private var totalPage = 0
     private var curPage = 0
+    private var readLabel: PagePart? = null
     private var ip: String = "0.0.0.0"
     private var port: Int = 9696
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -171,6 +177,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
         openUnzippedBtn = findViewById(R.id.btn_open_unzipped)
         openZippedBtn = findViewById(R.id.btn_open_zipped)
         bookInfoTV = findViewById(R.id.tv_bookinfo)
+        fontSizeET = findViewById(R.id.et_fontsize)
 
         chapterIndexET = findViewById(R.id.et_chapter_index)
         chapterReadBtn = findViewById(R.id.btn_chapter_read)
@@ -256,9 +263,10 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
             totalPage = pages.size
         }
 
-        override fun onRenderPage(page: Page, index: Int) {
+        override fun onRenderPage(index: Int, label: PagePart) {
             curPage = index
             pageProgressTV.text = "$curPage / $totalPage"
+            readLabel = label
         }
     }
 
@@ -327,6 +335,7 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
         }
     }
 
+    var renderContext: RenderContext? = null
     fun startRead(chapter: Chapter) {
         readerView.post {
             readerCloseTV.visibility = View.VISIBLE
@@ -335,7 +344,22 @@ class MainActivity : AppCompatActivity(), EasyPermissions.PermissionCallbacks,
             chapterTitleTV.visibility = View.VISIBLE
             val chapterIndex = chapterIndexET.text.toString().toInt()
             chapterTitleTV.text = "第${chapterIndex + 1}章"
-            readerView.render(book, chapter, renderReceiver)
+            // 创建RenderContext
+            if (renderContext == null) {
+                val textPaint = TextPaint(Paint.ANTI_ALIAS_FLAG)
+                textPaint.color = Color.parseColor("#3F3737")
+                textPaint.typeface = SerifTextView.serifTypefaces[SerifTextView.MEDIUM]
+                // 为了留白把渲染尺寸缩小
+                val canvasWidth = readerView.width * 19 / 20
+                val canvasHeight = readerView.height * 19 / 20
+                LogUtil.d("readerview size is $canvasWidth / $canvasHeight")
+                val renderOptions = RenderOptions(canvasWidth, canvasHeight, textPaint)
+                renderOptions.spacingAdd = 10
+                renderContext = RenderContext(this, renderOptions, book)
+            }
+            val fontSize = fontSizeET.text.toString()
+            renderContext!!.setTextSize(if (fontSize.isNullOrEmpty()) 15f else fontSize.toFloat())
+            readerView.render(renderContext!!, chapter, readLabel, renderReceiver)
         }
     }
 
