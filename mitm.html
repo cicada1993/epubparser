@@ -11,6 +11,7 @@
 -->
 <script>
     // This will prevent the sw from restarting
+    console.log('hello,service worker')
     let keepAlive = () => {
         keepAlive = () => { }
         var ping = location.href.substr(0, location.href.lastIndexOf('/')) + '/ping'
@@ -154,7 +155,7 @@
         registerWorker().then(() => {
             window.onmessage = onMessage
             messages.forEach(window.onmessage)
-        })
+        }).catch((e)=>{console.log('注册失败',e)})
     } else {
         // FF can ping sw with fetch from a secure hidden iframe
         // shouldn't really be possible?
